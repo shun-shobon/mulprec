@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,23 +32,23 @@ int main(void) {
       continue;
 
     printf("Test failed\n");
-    printf("  x: %lld\n", x);
+    printf("  x: %" PRId64 "\n", x);
     printf("  a: ");
-      display_num(&a);
+    display_num(&a);
     printf("\n");
-    printf("  y: %lld\n", y);
+    printf("  y: %" PRId64 "\n", y);
     printf("  b: ");
-      display_num(&b);
+    display_num(&b);
     printf("\n");
-    printf("  x / y: %lld\n", x / y);
+    printf("  x / y: %" PRId64 "\n", x / y);
     printf("  a / b: ");
-      display_num(&c);
+    display_num(&c);
     printf("\n");
-    printf("  x %% y: %lld\n", x % y);
+    printf("  x %% y: %" PRId64 "\n", x % y);
     printf("  a %% b: ");
-      display_num(&d);
+    display_num(&d);
     printf("\n");
-    printf("  stat: %d\n", stat);
+    printf("  stat: %" PRId8 "\n", stat);
 
     return -1;
   }
