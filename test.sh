@@ -3,7 +3,7 @@
 set -ue
 
 error() {
-	echo "$0: $@" >&2
+	echo "$0: $*" >&2
 }
 
 cd "$(dirname "$0")"
@@ -16,4 +16,9 @@ if [ ! -d $test_dir ]; then
 	exit 1
 fi
 
-find $test_dir -type f -maxdepth 1 -name "$pattern" | xargs -t -P 4 command
+# shellcheck disable=SC2044
+for test in $(find $test_dir -type f -maxdepth 1 -name "$pattern"); do
+  echo "Testing $test"
+  $test
+  echo ""
+done;
