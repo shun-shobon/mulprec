@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1...3.22)
 project(mulprec LANGUAGES C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_FLAGS "-Wall")
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
