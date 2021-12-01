@@ -3,11 +3,10 @@ on:
   push:
 
 jobs:
-  test-linux:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Configure CMake
         run: cmake -B build
 
@@ -16,25 +15,3 @@ jobs:
 
       - name: Test
         run: time ./test.sh
-
-  test-cygwin:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Cygwin
-        uses: egor-tensin/setup-cygwin@v3
-        with:
-          platform: x64
-          hardlinks: 1
-          packages: cmake gcc-core
-
-      - name: Configure CMake
-        run: cmake.exe -B build
-
-      - name: Build
-        run: cmake.exe --build build
-
-      - name: Test
-        run: time ./test.sh
-        shell: bash
