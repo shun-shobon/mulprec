@@ -8,9 +8,14 @@
 #define NUM_LEN 3
 #define NUM_BASE 1000000000
 
+typedef enum {
+  SIGN_POS,
+  SIGN_NEG,
+} sign_t;
+
 typedef struct {
   uint32_t n[NUM_LEN];
-  bool is_neg;
+  sign_t sign;
 } num_t;
 
 typedef int8_t status_t;
@@ -23,6 +28,8 @@ typedef enum {
   ORDER_GT,
 } order_t;
 
+extern void set_sign(num_t *, sign_t);
+extern sign_t get_sign(const num_t *);
 extern void clear_by_zero(num_t *);
 extern void display_num(const num_t *);
 extern void set_rnd(num_t *, uint32_t);
