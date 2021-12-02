@@ -31,7 +31,7 @@ typedef enum {
 extern void set_sign(num_t *, sign_t);
 extern sign_t get_sign(const num_t *);
 extern void clear_by_zero(num_t *);
-extern void display_num(const num_t *);
+extern void print_num(const num_t *);
 extern void set_rnd(num_t *, uint32_t);
 extern void copy_num(const num_t *, num_t *);
 extern void abs_num(const num_t *, num_t *);

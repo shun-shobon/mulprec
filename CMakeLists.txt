@@ -3,7 +3,7 @@ project(mulprec LANGUAGES C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_C_FLAGS "-Wall")
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 

@@ -1,5 +1,6 @@
 #include "mulprec.h"
 
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -16,15 +17,35 @@ void clear_by_zero(num_t *num) {
   }
 }
 
-void display_num(const num_t *num) {
-  if (get_sign(num) == SIGN_NEG) {
-    printf("-");
+void print_num(const num_t *num) {
+  uint64_t base = 10;
+
+  uint64_t tmp[NUM_LEN];
+  for (uint32_t i = 0; i < NUM_LEN; i++)
+    tmp[i] = num->n[i];
+
+  char buf[(size_t)(log10(NUM_BASE) * NUM_LEN + 1)];
+  int32_t idx = 0;
+
+  while (true) {
+    bool is_all_zero = true;
+    uint64_t carry = 0;
+    for (int32_t j = NUM_LEN - 1; j >= 0; j--) {
+      uint64_t val = carry * NUM_BASE + tmp[j];
+      tmp[j] = val / base;
+      carry = val % base;
+      if (tmp[j] != 0)
+        is_all_zero = false;
+    }
+
+    buf[idx++] = (char)('0' + carry);
+
+    if (is_all_zero)
+      break;
   }
 
-  // WARNING: 10^n進数でのみ機能する
-  for (int32_t i = NUM_LEN - 1; i >= 0; i--) {
-    printf("%09d", num->n[i]);
-  }
+  for (int32_t i = idx - 1; i >= 0; i--)
+    putchar(buf[i]);
 }
 
 void set_rnd(num_t *num, uint32_t k) {

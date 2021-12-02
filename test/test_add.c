@@ -28,15 +28,15 @@ int main(void) {
     printf("Test failed\n");
     printf("  x: %" PRId64 "\n", x);
     printf("  a: ");
-    display_num(&a);
+    print_num(&a);
     printf("\n");
     printf("  y: %" PRId64 "\n", y);
     printf("  b: ");
-    display_num(&b);
+    print_num(&b);
     printf("\n");
     printf("  x + y: %" PRId64 "\n", x + y);
     printf("  a + b: ");
-    display_num(&c);
+    print_num(&c);
     printf("\n");
     printf("  stat: %" PRId8 "\n", stat);
 
