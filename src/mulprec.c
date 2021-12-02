@@ -85,7 +85,7 @@ bool is_zero(const num_t *num) {
   return true;
 }
 
-status_t mul_by_base(const num_t *in, num_t *out) {
+stat_t mul_by_base(const num_t *in, num_t *out) {
   set_sign(out, get_sign(in));
 
   out->n[0] = 0;
@@ -116,7 +116,7 @@ int64_t div_by_base(const num_t *in, num_t *out) {
   }
 }
 
-status_t set_int(int64_t in, num_t *out) {
+stat_t set_int(int64_t in, num_t *out) {
   clear_by_zero(out);
 
   if (in < 0)
@@ -135,7 +135,7 @@ status_t set_int(int64_t in, num_t *out) {
   }
 }
 
-status_t get_int(const num_t *in, int64_t *out) {
+stat_t get_int(const num_t *in, int64_t *out) {
   num_t min, max;
   set_int(INT64_MIN + 1, &min);
   set_int(INT64_MAX, &max);
@@ -157,34 +157,34 @@ status_t get_int(const num_t *in, int64_t *out) {
   return STAT_OK;
 }
 
-order_t comp_num(const num_t *a, const num_t *b) {
+ord_t comp_num(const num_t *a, const num_t *b) {
   // a >= 0, b < 0 => a > b
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG)
-    return ORDER_GT;
+    return ORD_GT;
   // a < 0, b >= 0 => a < b
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS)
-    return ORDER_LT;
+    return ORD_LT;
   // a >= 0, b >= 0
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_POS)
     for (int32_t i = NUM_LEN - 1; i >= 0; i--) {
       if (a->n[i] > b->n[i])
-        return ORDER_GT;
+        return ORD_GT;
       if (a->n[i] < b->n[i])
-        return ORDER_LT;
+        return ORD_LT;
     }
   // a < 0, b < 0
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_NEG)
     for (int32_t i = NUM_LEN - 1; i >= 0; i--) {
       if (a->n[i] > b->n[i])
-        return ORDER_LT;
+        return ORD_LT;
       if (a->n[i] < b->n[i])
-        return ORDER_GT;
+        return ORD_GT;
     }
 
-  return ORDER_EQ;
+  return ORD_EQ;
 }
 
-status_t add_num(const num_t *a, const num_t *b, num_t *out) {
+stat_t add_num(const num_t *a, const num_t *b, num_t *out) {
   // a >= 0, b < 0 => a - |b|
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
     num_t c;
@@ -202,7 +202,7 @@ status_t add_num(const num_t *a, const num_t *b, num_t *out) {
     num_t c, d;
     abs_num(a, &c);
     abs_num(b, &d);
-    status_t stat = add_num(&c, &d, out);
+    stat_t stat = add_num(&c, &d, out);
     set_sign(out, SIGN_NEG);
     return stat;
   }
@@ -221,7 +221,7 @@ status_t add_num(const num_t *a, const num_t *b, num_t *out) {
   return STAT_OK;
 }
 
-status_t sub_num(const num_t *a, const num_t *b, num_t *out) {
+stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
   // a >= 0, b < 0 => a + |b|
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
     num_t c;
@@ -232,7 +232,7 @@ status_t sub_num(const num_t *a, const num_t *b, num_t *out) {
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS) {
     num_t c;
     abs_num(a, &c);
-    status_t stat = add_num(&c, b, out);
+    stat_t stat = add_num(&c, b, out);
     set_sign(out, SIGN_NEG);
     return stat;
   }
@@ -244,8 +244,8 @@ status_t sub_num(const num_t *a, const num_t *b, num_t *out) {
     return sub_num(&d, &c, out);
   }
   // a < b => -(b - a)
-  if (comp_num(a, b) == ORDER_LT) {
-    status_t stat = sub_num(b, a, out);
+  if (comp_num(a, b) == ORD_LT) {
+    stat_t stat = sub_num(b, a, out);
     set_sign(out, SIGN_NEG);
     return stat;
   }
@@ -269,18 +269,18 @@ status_t sub_num(const num_t *a, const num_t *b, num_t *out) {
   return STAT_OK;
 }
 
-status_t mul_num(const num_t *a, const num_t *b, num_t *out) {
+stat_t mul_num(const num_t *a, const num_t *b, num_t *out) {
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
     num_t c;
     abs_num(b, &c);
-    status_t stat = mul_num(a, &c, out);
+    stat_t stat = mul_num(a, &c, out);
     set_sign(out, SIGN_NEG);
     return stat;
   }
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS) {
     num_t c;
     abs_num(a, &c);
-    status_t stat = mul_num(&c, b, out);
+    stat_t stat = mul_num(&c, b, out);
     set_sign(out, SIGN_NEG);
     return stat;
   }
@@ -313,7 +313,7 @@ status_t mul_num(const num_t *a, const num_t *b, num_t *out) {
     num_t adder;
     clear_by_zero(&adder);
 
-    status_t stat = add_num(&tmp, out, &adder);
+    stat_t stat = add_num(&tmp, out, &adder);
     if (stat != STAT_OK)
       return STAT_ERR;
 
@@ -323,18 +323,18 @@ status_t mul_num(const num_t *a, const num_t *b, num_t *out) {
   return STAT_OK;
 }
 
-status_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
+stat_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
     num_t c;
     abs_num(b, &c);
-    status_t stat = div_num(a, &c, div, mod);
+    stat_t stat = div_num(a, &c, div, mod);
     set_sign(div, SIGN_NEG);
     return stat;
   }
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS) {
     num_t c;
     abs_num(a, &c);
-    status_t stat = div_num(&c, b, div, mod);
+    stat_t stat = div_num(&c, b, div, mod);
     set_sign(div, SIGN_NEG);
     set_sign(mod, SIGN_NEG);
     return stat;
@@ -343,7 +343,7 @@ status_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
     num_t c, d;
     abs_num(a, &c);
     abs_num(b, &d);
-    status_t stat = div_num(&c, &d, div, mod);
+    stat_t stat = div_num(&c, &d, div, mod);
     set_sign(mod, SIGN_NEG);
     return stat;
   }
@@ -358,7 +358,7 @@ status_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
 
   copy_num(a, &n);
   while (true) {
-    if (comp_num(&n, b) == ORDER_LT)
+    if (comp_num(&n, b) == ORD_LT)
       break;
 
     sub_num(&n, b, &tmp);
@@ -373,14 +373,14 @@ status_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
   return 0;
 }
 
-status_t increment_num(const num_t *in, num_t *out) {
+stat_t increment_num(const num_t *in, num_t *out) {
   num_t one;
   set_int(1, &one);
 
   return add_num(in, &one, out);
 }
 
-status_t decrement_num(const num_t *in, num_t *out) {
+stat_t decrement_num(const num_t *in, num_t *out) {
   num_t one;
   set_int(1, &one);
 

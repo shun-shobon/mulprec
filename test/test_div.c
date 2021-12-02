@@ -22,7 +22,7 @@ int main(void) {
     clear_by_zero(&c);
     clear_by_zero(&d);
 
-    status_t stat = div_num(&a, &b, &c, &d);
+    stat_t stat = div_num(&a, &b, &c, &d);
     int64_t z = 0;
     int64_t w = 0;
     get_int(&c, &z);

@@ -18,7 +18,7 @@ int main(void) {
     set_int(y, &b);
     clear_by_zero(&c);
 
-    status_t stat = sub_num(&a, &b, &c);
+    stat_t stat = sub_num(&a, &b, &c);
     int64_t z = 0;
     get_int(&c, &z);
 
