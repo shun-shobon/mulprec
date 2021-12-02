@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -8,7 +9,7 @@ int main(void) {
   num_t b;
   set_int(a, &b);
 
-  printf("a: %lld\n", a);
+  printf("a: %" PRIi64 "\n", a);
   printf("b: ");
   print_num(&b);
   printf("\n");
