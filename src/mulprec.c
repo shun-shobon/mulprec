@@ -18,9 +18,9 @@ void clear_by_zero(num_t *num) {
 }
 
 void print_num(const num_t *num) {
-  uint64_t base = 10;
+  int64_t base = 10;
 
-  uint64_t tmp[NUM_LEN];
+  int64_t tmp[NUM_LEN];
   for (uint32_t i = 0; i < NUM_LEN; i++)
     tmp[i] = num->n[i];
 
@@ -29,9 +29,9 @@ void print_num(const num_t *num) {
 
   while (true) {
     bool is_all_zero = true;
-    uint64_t carry = 0;
+    int64_t carry = 0;
     for (int32_t j = NUM_LEN - 1; j >= 0; j--) {
-      uint64_t val = carry * NUM_BASE + tmp[j];
+      int64_t val = carry * NUM_BASE + tmp[j];
       tmp[j] = val / base;
       carry = val % base;
       if (tmp[j] != 0)
@@ -122,7 +122,7 @@ status_t set_int(int64_t in, num_t *out) {
   if (in < 0)
     set_sign(out, SIGN_NEG);
 
-  uint64_t tmp = in >= 0 ? in : -in;
+  int64_t tmp = in >= 0 ? in : -in;
   for (uint32_t i = 0; i < NUM_LEN; i++) {
     out->n[i] = tmp % NUM_BASE;
     tmp /= NUM_BASE;
@@ -207,10 +207,10 @@ status_t add_num(const num_t *a, const num_t *b, num_t *out) {
     return stat;
   }
 
-  uint64_t carry = 0;
+  int64_t carry = 0;
 
   for (uint32_t i = 0; i < NUM_LEN; i++) {
-    uint64_t tmp = (uint64_t)a->n[i] + (uint64_t)b->n[i] + carry;
+    int64_t tmp = a->n[i] + b->n[i] + carry;
     out->n[i] = tmp % NUM_BASE;
     carry = tmp / NUM_BASE;
   }
@@ -250,10 +250,10 @@ status_t sub_num(const num_t *a, const num_t *b, num_t *out) {
     return stat;
   }
 
-  uint32_t borrow = 0;
+  int32_t borrow = 0;
 
   for (uint32_t i = 0; i < NUM_LEN; i++) {
-    int64_t tmp = (int64_t)a->n[i] - (int64_t)b->n[i] - borrow;
+    int64_t tmp = a->n[i] - b->n[i] - borrow;
     if (tmp < 0) {
       out->n[i] = tmp + NUM_BASE;
       borrow = 1;
@@ -292,12 +292,12 @@ status_t mul_num(const num_t *a, const num_t *b, num_t *out) {
   }
 
   for (uint32_t i = 0; i < NUM_LEN; i++) {
-    uint64_t carry = 0;
+    int64_t carry = 0;
     num_t tmp;
     clear_by_zero(&tmp);
 
     for (uint32_t j = 0; j < NUM_LEN; j++) {
-      uint64_t tmp_n = (uint64_t)a->n[j] * (uint64_t)b->n[i] + carry;
+      int64_t tmp_n = a->n[j] * b->n[i] + carry;
 
       if (i + j < NUM_LEN)
         tmp.n[i + j] = tmp_n % NUM_BASE;

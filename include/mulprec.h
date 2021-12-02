@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #define NUM_LEN 3
-#define NUM_BASE 1000000000
+#define NUM_BASE INT32_MAX
 
 typedef enum {
   SIGN_POS,
@@ -14,7 +14,7 @@ typedef enum {
 } sign_t;
 
 typedef struct {
-  uint32_t n[NUM_LEN];
+  int64_t n[NUM_LEN];
   sign_t sign;
 } num_t;
 
