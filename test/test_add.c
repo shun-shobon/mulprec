@@ -38,7 +38,7 @@ int main(void) {
     printf("  a + b: ");
     print_num(&c);
     printf("\n");
-    printf("  stat: %" PRId8 "\n", stat);
+    printf("  stat: %c\n", stat);
 
     return -1;
   }

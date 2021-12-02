@@ -157,6 +157,26 @@ stat_t get_int(const num_t *in, int64_t *out) {
   return STAT_OK;
 }
 
+static stat_t fix_num(num_t *num) {
+  for (uint32_t i = 0; i < NUM_LEN - 1; i++) {
+    if (NUM_BASE <= num->n[i]) {
+      int64_t carry = num->n[i] / NUM_BASE;
+      num->n[i] -= carry * NUM_BASE;
+      num->n[i + 1] += carry;
+    }
+    if (num->n[i] < 0) {
+      int64_t borrow = (-num->n[i] - 1) / NUM_BASE + 1;
+      num->n[i] += borrow * NUM_BASE;
+      num->n[i + 1] -= borrow;
+    }
+  }
+
+  if (0 <= num->n[NUM_LEN - 1] || num->n[NUM_LEN - 1] < NUM_BASE)
+    return STAT_OK;
+  else
+    return STAT_ERR;
+}
+
 ord_t comp_num(const num_t *a, const num_t *b) {
   // a >= 0, b < 0 => a > b
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG)
@@ -207,18 +227,11 @@ stat_t add_num(const num_t *a, const num_t *b, num_t *out) {
     return stat;
   }
 
-  int64_t carry = 0;
-
   for (uint32_t i = 0; i < NUM_LEN; i++) {
-    int64_t tmp = a->n[i] + b->n[i] + carry;
-    out->n[i] = tmp % NUM_BASE;
-    carry = tmp / NUM_BASE;
+    out->n[i] = a->n[i] + b->n[i];
   }
 
-  if (carry != 0)
-    return STAT_ERR;
-
-  return STAT_OK;
+  return fix_num(out);
 }
 
 stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
@@ -250,23 +263,11 @@ stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
     return stat;
   }
 
-  int32_t borrow = 0;
-
   for (uint32_t i = 0; i < NUM_LEN; i++) {
-    int64_t tmp = a->n[i] - b->n[i] - borrow;
-    if (tmp < 0) {
-      out->n[i] = tmp + NUM_BASE;
-      borrow = 1;
-    } else {
-      out->n[i] = tmp;
-      borrow = 0;
-    }
+    out->n[i] = a->n[i] - b->n[i];
   }
 
-  if (borrow != 0)
-    return STAT_ERR;
-
-  return STAT_OK;
+  return fix_num(out);
 }
 
 stat_t mul_num(const num_t *a, const num_t *b, num_t *out) {
@@ -292,35 +293,18 @@ stat_t mul_num(const num_t *a, const num_t *b, num_t *out) {
   }
 
   for (uint32_t i = 0; i < NUM_LEN; i++) {
-    int64_t carry = 0;
-    num_t tmp;
-    clear_by_zero(&tmp);
-
     for (uint32_t j = 0; j < NUM_LEN; j++) {
-      int64_t tmp_n = a->n[j] * b->n[i] + carry;
+      int64_t tmp = a->n[j] * b->n[i];
 
-      if (i + j < NUM_LEN)
-        tmp.n[i + j] = tmp_n % NUM_BASE;
-      else if (tmp_n % NUM_BASE != 0)
+      if (NUM_LEN - 1 < i + j && tmp != 0)
         return STAT_ERR;
 
-      carry = tmp_n / NUM_BASE;
+      // WARNING: オーバーフローの可能性あり
+      out->n[i + j] += tmp;
     }
-
-    if (carry != 0)
-      return STAT_ERR;
-
-    num_t adder;
-    clear_by_zero(&adder);
-
-    stat_t stat = add_num(&tmp, out, &adder);
-    if (stat != STAT_OK)
-      return STAT_ERR;
-
-    copy_num(&adder, out);
   }
 
-  return STAT_OK;
+  return fix_num(out);
 }
 
 stat_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
