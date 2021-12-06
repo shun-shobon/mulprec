@@ -9,15 +9,6 @@
 void set_sign(num_t *num, sign_t sign) { num->sign = sign; }
 sign_t get_sign(const num_t *num) { return num->sign; }
 
-void calc_len(num_t *num) {
-  for (int32_t i = NUM_LEN - 1; i >= 0; i--) {
-    if (num->n[i] != 0) {
-      num->len = i + 1;
-      return;
-    }
-  }
-}
-
 void clear_by_zero(num_t *num) {
   set_sign(num, SIGN_POS);
 
@@ -60,8 +51,6 @@ void print_num(const num_t *num) {
 }
 
 void set_rnd(num_t *num, uint32_t k) {
-  clear_by_zero(num);
-
   if (random() % 2 == 0)
     set_sign(num, SIGN_NEG);
 
@@ -147,18 +136,18 @@ int64_t div_by_base(const num_t *in, num_t *out) {
 }
 
 stat_t set_int(int64_t in, num_t *out) {
-  clear_by_zero(out);
+  *out = ZERO_NUM;
 
   if (in < 0)
     set_sign(out, SIGN_NEG);
 
   int64_t tmp = in >= 0 ? in : -in;
-  for (uint32_t i = 0; i < NUM_LEN; i++) {
+  for (int32_t i = 0; i < NUM_LEN; i++) {
     out->n[i] = tmp % NUM_BASE;
     tmp /= NUM_BASE;
 
     if (tmp == 0) {
-      out->len = (int32_t)i + 1;
+      out->len = i + 1;
       break;
     }
   }
@@ -313,25 +302,23 @@ static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
   if (is_zero(b))
     return STAT_ERR;
 
-  num_t n, tmp;
-  clear_by_zero(&n);
-  clear_by_zero(&tmp);
+  num_t tmp = ZERO_NUM;
 
-  copy_num(a, &n);
+  copy_num(a, mod);
   while (true) {
-    if (comp_num_nat(&n, b) == ORD_LT)
+    if (comp_num_nat(mod, b) == ORD_LT)
       break;
 
-    sub_num_nat(&n, b, &tmp);
-    copy_num(&tmp, &n);
+    sub_num_nat(mod, b, &tmp);
+    copy_num(&tmp, mod);
 
-    clear_by_zero(&tmp);
+    tmp = ZERO_NUM;
 
     increment_num(div, &tmp);
     copy_num(&tmp, div);
   }
 
-  copy_num(&n, mod);
+  copy_num(mod, mod);
 
   return STAT_OK;
 }
@@ -450,15 +437,9 @@ stat_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
 }
 
 stat_t increment_num(const num_t *in, num_t *out) {
-  num_t one;
-  set_int(1, &one);
-
-  return add_num(in, &one, out);
+  return add_num(in, &ONE_NUM, out);
 }
 
 stat_t decrement_num(const num_t *in, num_t *out) {
-  num_t one;
-  set_int(1, &one);
-
-  return sub_num(in, &one, out);
+  return sub_num(in, &ONE_NUM, out);
 }

@@ -30,13 +30,15 @@ typedef enum {
   ORD_GT,
 } ord_t;
 
+#define ZERO_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {0}})
+#define ONE_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {1}})
+
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define index_or_zero(num, i) ((i) < (num)->len ? (num)->n[i] : 0)
 
 extern void set_sign(num_t *, sign_t);
 extern sign_t get_sign(const num_t *);
-extern void calc_len(num_t *);
 extern void clear_by_zero(num_t *);
 extern void print_num(const num_t *);
 extern void set_rnd(num_t *, uint32_t);
