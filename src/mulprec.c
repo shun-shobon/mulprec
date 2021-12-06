@@ -230,7 +230,7 @@ static stat_t fix_num(num_t *num) {
     num->len--;
 
   // オーバーフロー/アンダーフロー判定
-  if (0 <= num->n[NUM_LEN - 1] || num->n[NUM_LEN - 1] < NUM_BASE)
+  if (0 <= num->n[NUM_LEN - 1] && num->n[NUM_LEN - 1] < NUM_BASE)
     return STAT_OK;
   else
     return STAT_ERR;
@@ -273,7 +273,7 @@ ord_t comp_num(const num_t *a, const num_t *b) {
 static stat_t add_num_nat(const num_t *a, const num_t *b, num_t *out) {
   out->len = max(a->len, b->len);
 
-  for (uint32_t i = 0; i < NUM_LEN; i++) {
+  for (uint32_t i = 0; i < out->len; i++) {
     out->n[i] = index_or_zero(a, i) + index_or_zero(b, i);
   }
 
@@ -283,7 +283,7 @@ static stat_t add_num_nat(const num_t *a, const num_t *b, num_t *out) {
 static stat_t sub_num_nat(const num_t *a, const num_t *b, num_t *out) {
   out->len = max(a->len, b->len);
 
-  for (uint32_t i = 0; i < NUM_LEN; i++) {
+  for (uint32_t i = 0; i < out->len; i++) {
     out->n[i] = index_or_zero(a, i) - index_or_zero(b, i);
   }
 
@@ -339,11 +339,27 @@ static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
 stat_t add_num(const num_t *a, const num_t *b, num_t *out) {
   // a >= 0, b < 0 => a - |b|
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
-    return sub_num_nat(a, b, out);
+    // |a| > |b| => a - |b|
+    if (comp_num_nat(a, b) == ORD_GT)
+      return sub_num_nat(a, b, out);
+    // |a| < |b| => -(a - |b|)
+    else {
+      stat_t stat = sub_num_nat(b, a, out);
+      set_sign(out, SIGN_NEG);
+      return stat;
+    }
   }
   // a < 0, b >= 0 => b - |a|
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS) {
-    return sub_num_nat(b, a, out);
+    // b > |a| => b - |a|
+    if (comp_num_nat(b, a) == ORD_GT)
+      return sub_num_nat(b, a, out);
+    // b < |a| => -(|a| - b)
+    else {
+      stat_t stat = sub_num_nat(a, b, out);
+      set_sign(out, SIGN_NEG);
+      return stat;
+    }
   }
   // a < 0, b < 0 => -(|a| + |b|)
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_NEG) {
@@ -368,7 +384,15 @@ stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
   }
   // a < 0, b < 0 => |b| - |a|
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_NEG) {
-    return sub_num_nat(b, a, out);
+    // |b| > |a| => |b| - |a|
+    if (comp_num_nat(b, a) == ORD_GT)
+      return sub_num_nat(b, a, out);
+    // |b| < |a| => -(|a| - |b|)
+    else {
+      stat_t stat = sub_num_nat(a, b, out);
+      set_sign(out, SIGN_NEG);
+      return stat;
+    }
   }
   // a < b => -(b - a)
   if (comp_num(a, b) == ORD_LT) {

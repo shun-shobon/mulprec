@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_LEN 3
+#define NUM_LEN 100
 #define NUM_BASE INT32_MAX
 
 typedef enum {
