@@ -16,6 +16,7 @@ typedef enum {
 typedef struct {
   int64_t n[NUM_LEN];
   sign_t sign;
+  int32_t len;
 } num_t;
 
 typedef enum {
@@ -29,8 +30,13 @@ typedef enum {
   ORD_GT,
 } ord_t;
 
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define index_or_zero(num, i) ((i) < (num)->len ? (num)->n[i] : 0)
+
 extern void set_sign(num_t *, sign_t);
 extern sign_t get_sign(const num_t *);
+extern void calc_len(num_t *);
 extern void clear_by_zero(num_t *);
 extern void print_num(const num_t *);
 extern void set_rnd(num_t *, uint32_t);

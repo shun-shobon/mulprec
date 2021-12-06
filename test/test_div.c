@@ -48,7 +48,7 @@ int main(void) {
     printf("  a %% b: ");
     print_num(&d);
     printf("\n");
-    printf("  stat: %c\n", stat);
+    printf("  stat: %d\n", stat);
 
     return -1;
   }
