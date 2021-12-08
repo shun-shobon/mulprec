@@ -1,58 +1,27 @@
-#include <inttypes.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 #include "mulprec.h"
+#include "util.h"
 
-int main(void) {
-  srandom(time(NULL));
-
-  for (uint32_t i = 0; i < 1000000; i++) {
-    int64_t x = (random() - (RAND_MAX / 2)) * 4;
-    int64_t y = (random() - (RAND_MAX / 2)) * 4;
-
-    if (y == 0)
-      y = 1;
-
-    num_t a, b, c, d;
-    set_int(x, &a);
-    set_int(y, &b);
-    clear_by_zero(&c);
-    clear_by_zero(&d);
-
-    stat_t stat = div_num(&a, &b, &c, &d);
-    int64_t z = 0;
-    int64_t w = 0;
-    get_int(&c, &z);
-    get_int(&d, &w);
-
-    if (x / y == z && x % y == w && stat == STAT_OK)
-      continue;
-
-    printf("Test failed\n");
-    printf("  x: %" PRId64 "\n", x);
-    printf("  a: ");
-    print_num(&a);
-    printf("\n");
-    printf("  y: %" PRId64 "\n", y);
-    printf("  b: ");
-    print_num(&b);
-    printf("\n");
-    printf("  x / y: %" PRId64 "\n", x / y);
-    printf("  a / b: ");
-    print_num(&c);
-    printf("\n");
-    printf("  x %% y: %" PRId64 "\n", x % y);
-    printf("  a %% b: ");
-    print_num(&d);
-    printf("\n");
-    printf("  stat: %d\n", stat);
-
-    return -1;
+int main(int argc, char **argv) {
+  if (argc != 3) {
+    fprintf(stderr, "Usage: %s <x> <y>\n", argv[0]);
+    return 1;
   }
 
-  printf("Test passed\n");
+  num_t x, y, z, w;
+  z = ZERO_NUM;
+  w = ZERO_NUM;
+
+  assert_ok(input_num(argv[1], &x));
+  assert_ok(input_num(argv[2], &y));
+
+  assert_ok(div_num(&x, &y, &z, &w));
+
+  print_num(&z);
+  printf("\n");
+  print_num(&w);
+  printf("\n");
+
   return 0;
 }

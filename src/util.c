@@ -1,7 +1,9 @@
+#include "util.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "util.h"
+#include "mulprec.h"
 
 int lprintf(FILE *fp, const char *file, int line, const char *func,
             const char *fmt, ...) {
@@ -21,4 +23,11 @@ int lprintf(FILE *fp, const char *file, int line, const char *func,
   funlockfile(fp);
 
   return n;
+}
+
+void assert_ok(stat_t stat) {
+  if (stat != STAT_OK) {
+    printf("Error: %s\n", "error");
+    exit(1);
+  }
 }
