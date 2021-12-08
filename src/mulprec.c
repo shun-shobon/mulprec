@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void set_sign(num_t *num, sign_t sign) { num->sign = sign; }
 sign_t get_sign(const num_t *num) { return num->sign; }
@@ -46,8 +47,52 @@ void print_num(const num_t *num) {
       break;
   }
 
+  if (num->sign == SIGN_NEG)
+    putchar('-');
   for (int32_t i = idx - 1; i >= 0; i--)
     putchar(buf[i]);
+}
+
+stat_t input_num(const char *src, num_t *dst) {
+  int64_t base = 10;
+
+  if (src[0] == '-') {
+    set_sign(dst, SIGN_NEG);
+    src++;
+  } else {
+    set_sign(dst, SIGN_POS);
+  }
+
+  int32_t len = (int32_t)strlen(src);
+
+  int64_t tmp[len];
+  for (uint32_t i = 0; i < len; i++)
+    tmp[i] = src[len - i - 1] - '0';
+
+  dst->len = 0;
+
+  while (true) {
+    bool is_all_zero = true;
+    int64_t carry = 0;
+    for (int32_t i = len - 1; i >= 0; i--) {
+      int64_t val = carry * base + tmp[i];
+      tmp[i] = val / NUM_BASE;
+      carry = val % NUM_BASE;
+      if (tmp[i] != 0)
+        is_all_zero = false;
+    }
+
+    // buf[idx++] = carry;
+    dst->n[dst->len++] = carry;
+    // if (idx == NUM_LEN)
+    if (dst->len == NUM_LEN)
+      return STAT_ERR;
+
+    if (is_all_zero)
+      break;
+  }
+
+  return STAT_OK;
 }
 
 void set_rnd(num_t *num, uint32_t k) {

@@ -1,17 +1,15 @@
-#include <inttypes.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "mulprec.h"
 
 int main(void) {
-  int64_t a = 5432109876543210;
-  num_t b;
-  set_int(a, &b);
+  char *in = "-12345678901234567890123456789012345";
+  num_t out;
+  input_num(in, &out);
 
-  printf("a: %" PRIi64 "\n", a);
-  printf("b: ");
-  print_num(&b);
+  printf("in : %s\n", in);
+  printf("out: ");
+  print_num(&out);
   printf("\n");
 
   printf("Test passed\n");
