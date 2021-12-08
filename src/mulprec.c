@@ -30,21 +30,19 @@ void print_num(const num_t *num) {
   char buf[(size_t)(log10(NUM_BASE) * num->len + 1)];
   int32_t idx = 0;
 
-  while (true) {
-    bool is_all_zero = true;
+  int32_t start = num->len - 1;
+  while (start >= 0) {
     int64_t carry = 0;
-    for (int32_t i = num->len - 1; i >= 0; i--) {
+    for (int32_t i = start; i >= 0; i--) {
       int64_t val = carry * NUM_BASE + tmp[i];
       tmp[i] = val / base;
       carry = val % base;
-      if (tmp[i] != 0)
-        is_all_zero = false;
     }
 
     buf[idx++] = (char)('0' + carry);
 
-    if (is_all_zero)
-      break;
+    if (tmp[start] == 0)
+      start--;
   }
 
   if (num->sign == SIGN_NEG)
@@ -71,25 +69,21 @@ stat_t input_num(const char *src, num_t *dst) {
 
   dst->len = 0;
 
-  while (true) {
-    bool is_all_zero = true;
+  int32_t start = len - 1;
+  while (start >= 0) {
     int64_t carry = 0;
-    for (int32_t i = len - 1; i >= 0; i--) {
+    for (int32_t i = start; i >= 0; i--) {
       int64_t val = carry * base + tmp[i];
       tmp[i] = val / NUM_BASE;
       carry = val % NUM_BASE;
-      if (tmp[i] != 0)
-        is_all_zero = false;
     }
 
-    // buf[idx++] = carry;
     dst->n[dst->len++] = carry;
-    // if (idx == NUM_LEN)
     if (dst->len == NUM_LEN)
       return STAT_ERR;
 
-    if (is_all_zero)
-      break;
+    if (tmp[start] == 0)
+      start--;
   }
 
   return STAT_OK;
