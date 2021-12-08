@@ -4,7 +4,7 @@ import sys
 
 TEST_COMMAND = "./build/test/test_mul"
 
-for _ in range(10 ** 5):
+for _ in range(1000):
     x = random.randint(-1 * 10 ** 50, 10 ** 50)
     y = random.randint(-1 * 10 ** 50, 10 ** 50)
     res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout
