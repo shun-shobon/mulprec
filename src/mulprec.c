@@ -338,10 +338,13 @@ static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
 
 static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
                           num_t *mod) {
+  *div = ZERO_NUM;
+  *mod = ZERO_NUM;
+
   if (is_zero(b))
     return STAT_ERR;
 
-  num_t tmp = ZERO_NUM;
+  num_t tmp;
 
   copy_num(a, mod);
   while (true) {
@@ -351,13 +354,9 @@ static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
     sub_num_nat(mod, b, &tmp);
     copy_num(&tmp, mod);
 
-    tmp = ZERO_NUM;
-
     increment_num(div, &tmp);
     copy_num(&tmp, div);
   }
-
-  copy_num(mod, mod);
 
   return STAT_OK;
 }
