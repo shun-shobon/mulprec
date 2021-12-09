@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_LEN 100
-#define NUM_BASE INT32_MAX
+#define NUM_LEN 60
+#define NUM_BASE (INT32_MAX >> 2)
 
 typedef enum {
   SIGN_POS,
