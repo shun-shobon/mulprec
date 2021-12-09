@@ -10,8 +10,6 @@ int main(int argc, char **argv) {
   }
 
   num_t x, y, z, w;
-  z = ZERO_NUM;
-  w = ZERO_NUM;
 
   assert_ok(input_num(argv[1], &x));
   assert_ok(input_num(argv[2], &y));
