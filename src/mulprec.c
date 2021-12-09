@@ -82,7 +82,7 @@ stat_t input_num(const char *src, num_t *dst) {
     if (dst->len == NUM_LEN)
       return STAT_ERR;
 
-    if (tmp[start] == 0)
+    while (tmp[start] == 0)
       start--;
   }
 
