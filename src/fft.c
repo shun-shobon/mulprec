@@ -50,11 +50,11 @@ static int64_t mpow(int64_t a, int64_t n, int64_t mod) {
   return res;
 }
 
-static const int64_t MOD = 998244353;
-static const int64_t DIV_LIMIT = 23;
+static const int64_t MOD = 2013265921;
+static const int64_t DIV_LIMIT = 27;
 static int64_t ROOT[DIV_LIMIT + 1];
 static int64_t ROOT_INV[DIV_LIMIT + 1];
-static const int64_t PRIMITIVE_ROOT = 3;
+static const int64_t PRIMITIVE_ROOT = 137;
 
 void setup_fft(void) {
   ROOT[DIV_LIMIT] =
