@@ -18,11 +18,11 @@ for i in range(loop):
     start = time()
     res = subprocess.run(TEST_COMMAND, input=f"{n} {n} {' '.join(map(str, f))} {' '.join(map(str, g))}".encode("utf-8"),
                          stdout=subprocess.PIPE,
-                         stderr=sys.stderr).stdout
+                         stderr=sys.stderr).stdout.decode("utf-8").strip()
     end = time()
     time_sum += end - start
     expected = np.convolve(f, g).tolist()
-    actual = list(map(int, res.decode("utf-8").split()))
+    actual = list(map(int, res.split()))
 
     if expected != actual:
         print("Test failed", file=sys.stderr)

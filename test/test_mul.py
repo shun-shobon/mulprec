@@ -7,7 +7,8 @@ TEST_COMMAND = "./build/test/test_mul"
 for _ in range(1000):
     x = random.randint(-1 * 10 ** 45, 10 ** 45)
     y = random.randint(-1 * 10 ** 45, 10 ** 45)
-    res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout
+    res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout.decode(
+        "utf-8").strip()
     expected = x * y
     actual = int(res)
 

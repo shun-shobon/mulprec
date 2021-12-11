@@ -4,10 +4,11 @@ import sys
 
 TEST_COMMAND = "./build/test/test_comp"
 
-for _ in range(10 ** 6):
+for _ in range(1000):
     x = random.randint(-1 * 10 ** 50, 10 ** 50)
     y = random.randint(-1 * 10 ** 50, 10 ** 50)
-    res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout
+    res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout.decode(
+        "utf-8").strip()
 
     expected = ""
     if x > y:
@@ -16,7 +17,7 @@ for _ in range(10 ** 6):
         expected = "EQ"
     elif x < y:
         expected = "LT"
-    actual = res.decode("utf-8").strip()
+    actual = res.strip()
 
     if expected != actual:
         print("Test failed", file=sys.stderr)

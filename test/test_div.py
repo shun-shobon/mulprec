@@ -7,7 +7,8 @@ TEST_COMMAND = "./build/test/test_div"
 for _ in range(1000):
     x = random.randint(0, 10 ** 50)
     y = random.randint(1, 10 ** 50)
-    res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout
+    res = subprocess.run([TEST_COMMAND, str(x), str(y)], stdout=subprocess.PIPE, stderr=sys.stderr).stdout.decode(
+        "utf-8").strip()
     expected_div, expected_mod = x // y, x % y
     actual_div, actual_mod = map(int, res.splitlines())
 
