@@ -12,9 +12,9 @@ time_sum = 0
 loop = 1000
 
 for i in range(loop):
-    n = random.randint(1, 3000)
-    f = [random.randint(0, 2 ** 10) for _ in range(n)]
-    g = [random.randint(0, 2 ** 10) for _ in range(n)]
+    n = random.randint(1, 10000)
+    f = [random.randint(0, 2 ** 20) for _ in range(n)]
+    g = [random.randint(0, 2 ** 20) for _ in range(n)]
     start = time()
     res = subprocess.run(TEST_COMMAND, input=f"{n} {n} {' '.join(map(str, f))} {' '.join(map(str, g))}".encode("utf-8"),
                          stdout=subprocess.PIPE,
@@ -32,6 +32,6 @@ for i in range(loop):
         print("  actual  : {}".format(actual), file=sys.stderr)
         sys.exit(1)
 
-print("time average: {}ms".format((time_sum / loop) * 1000))
+print("average time: {}ms".format((time_sum / loop) * 1000))
 
 print("Test passed")
