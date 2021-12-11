@@ -78,7 +78,7 @@ void setup_fft(void) {
     calc_roots(&ntts[i]);
 }
 
-static int32_t log2(int32_t n) {
+static int32_t log2i64(int32_t n) {
   int32_t ans = 0;
   while (!(n & 1)) {
     n >>= 1;
@@ -92,7 +92,7 @@ void ufft(int64_t *f, int32_t n, ntt_t *ntt) {
 
   while (m > 1) {
     for (int32_t i = 0; i < n / m; i++) {
-      int64_t zeta = ntt->root[log2(m)];
+      int64_t zeta = ntt->root[log2i64(m)];
       int64_t now = 1;
       for (int32_t j = 0; j < m / 2; j++) {
         int64_t l = f[i * m + j];
@@ -111,7 +111,7 @@ void iufft(int64_t *f, int32_t n, ntt_t *ntt) {
 
   while (m <= n) {
     for (int32_t i = 0; i < n / m; i++) {
-      int64_t zeta = ntt->root_inv[log2(m)];
+      int64_t zeta = ntt->root_inv[log2i64(m)];
       int64_t now = 1;
       for (int32_t j = 0; j < m / 2; j++) {
         int64_t l = f[i * m + j];
