@@ -323,7 +323,7 @@ static stat_t sub_num_nat(const num_t *a, const num_t *b, num_t *out) {
 static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
   out->len = a->len + b->len - 1;
 
-#ifdef false
+#if 0
   for (uint32_t i = 0; i < b->len; i++) {
     for (uint32_t j = 0; j < a->len; j++) {
       int64_t tmp = a->n[j] * b->n[i];
