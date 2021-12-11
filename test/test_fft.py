@@ -12,7 +12,7 @@ time_sum = 0
 loop = 1000
 
 for i in range(loop):
-    n = random.randint(1, 10000)
+    n = random.randint(1, 100)
     f = [random.randint(0, 2 ** 20) for _ in range(n)]
     g = [random.randint(0, 2 ** 20) for _ in range(n)]
     start = time()
