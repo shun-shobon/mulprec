@@ -1,5 +1,6 @@
 #include "mulprec.h"
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -22,7 +23,13 @@ void clear_by_zero(num_t *num) {
   num->len = 1;
 }
 
+/*
+-114325486667430484020512876438799710066005140688967
+     -1486667430484020512876438799710066005140688967
+ */
+
 void print_num(const num_t *num) {
+#if 0
   int64_t base = 10;
 
   int64_t tmp[num->len];
@@ -51,9 +58,18 @@ void print_num(const num_t *num) {
     putchar('-');
   for (int32_t i = idx - 1; i >= 0; i--)
     putchar(buf[i]);
+#else
+  if (num->sign == SIGN_NEG)
+    putchar('-');
+
+  printf("%" PRId64, num->n[num->len - 1]);
+  for (int32_t i = num->len - 2; i >= 0; i--)
+    printf("%09" PRId64, num->n[i]);
+#endif
 }
 
 stat_t input_num(const char *src, num_t *dst) {
+#if 0
   int64_t base = 10;
 
   if (src[0] == '-') {
@@ -89,6 +105,39 @@ stat_t input_num(const char *src, num_t *dst) {
   }
 
   return STAT_OK;
+#else
+  if (src[0] == '-') {
+    set_sign(dst, SIGN_NEG);
+    src++;
+  } else {
+    set_sign(dst, SIGN_POS);
+  }
+
+  int32_t len = (int32_t)strlen(src);
+
+  dst->len = 0;
+
+  for (int32_t i = len - 1; i >= 0; i -= 9) {
+    int64_t val = 0;
+    int64_t pow = 1;
+    bool brk = false;
+    for (int32_t j = 0; j < 9; j++) {
+      if (i - j < 0) {
+        brk = true;
+        break;
+      }
+      val += (int64_t)(src[i - j] - '0') * pow;
+      pow *= 10;
+    }
+    if (dst->len == NUM_LEN)
+      return STAT_ERR;
+    dst->n[dst->len++] = val;
+    if (brk)
+      break;
+  }
+
+  return STAT_OK;
+#endif
 }
 
 void set_rnd(num_t *num, uint32_t k) {

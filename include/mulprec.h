@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #define NUM_LEN 100
-#define NUM_BASE (1 << 20)
+#define NUM_BASE 1000000000
 
 typedef enum {
   SIGN_POS,
