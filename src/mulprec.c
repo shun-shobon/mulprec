@@ -386,10 +386,36 @@ static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
   return fix_num(out);
 }
 
+static stat_t div_num_single_nat(const num_t *a, const num_t *b, num_t *div,
+                                 num_t *mod) {
+  if (b->n[0] == 0)
+    return STAT_ERR;
+
+  int64_t carry = 0;
+
+  for (int32_t i = a->len - 1; i >= 0; i--) {
+    int64_t val = carry * NUM_BASE + a->n[i];
+    div->n[i] = val / b->n[0];
+    carry = val % b->n[0];
+  }
+
+  div->len = a->len;
+  if (div->n[div->len - 1])
+    div->len--;
+
+  mod->len = 1;
+  mod->n[0] = carry;
+
+  return STAT_OK;
+}
+
 static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
                           num_t *mod) {
   *div = ZERO_NUM;
   *mod = ZERO_NUM;
+
+  if (b->len == 1)
+    return div_num_single_nat(a, b, div, mod);
 
   if (is_zero(b))
     return STAT_ERR;
