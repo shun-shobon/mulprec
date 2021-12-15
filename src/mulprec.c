@@ -1,6 +1,7 @@
 #include "mulprec.h"
 
 #include <inttypes.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -588,4 +589,50 @@ stat_t increment_num(const num_t *in, num_t *out) {
 
 stat_t decrement_num(const num_t *in, num_t *out) {
   return sub_num(in, &ONE_NUM, out);
+}
+
+stat_t sqrt2_inv(int32_t digit, num_t *out) {
+  int32_t loop = (int32_t)ceil(log2(digit * NUM_BASE_DIGIT)) + 1;
+
+  int32_t offset = 2;
+  int32_t shift = 0;
+
+  num_t x = ZERO_NUM;
+  num_t two = ZERO_NUM;
+  num_t three = ZERO_NUM;
+
+  x.len = shift + offset;
+  x.n[shift + offset - 1] = (int64_t)8 * NUM_BASE / 10; // 0.8
+
+  two.n[0] = 2;
+
+  three.len = shift + offset + 1;
+  three.n[shift + offset] = 3;
+
+  num_t tmp1 = ZERO_NUM;
+  num_t tmp2 = ZERO_NUM;
+  num_t tmp3 = ZERO_NUM;
+  for (int32_t i = 0; i < loop; i++) {
+    int32_t tmp = (1 << max(i - 1, 0)) / NUM_BASE_DIGIT;
+    if (tmp > shift) {
+      shift_left(&x, &x, tmp - shift);
+      shift_left(&three, &three, tmp - shift);
+
+      shift += tmp - shift;
+    }
+
+    mul_num(&x, &x, &tmp1);
+    mul_num(&tmp1, &two, &tmp2);
+    shift_right(&tmp2, &tmp3, shift + offset);
+
+    sub_num(&three, &tmp3, &tmp1);
+
+    mul_num(&x, &tmp1, &tmp2);
+
+    div_num(&tmp2, &two, &tmp3, &tmp1);
+    shift_right(&tmp3, &x, shift + offset);
+  }
+
+  copy_num(&x, out);
+  return STAT_OK;
 }

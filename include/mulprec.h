@@ -5,8 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_LEN 100
+#define NUM_LEN 10000
 #define NUM_BASE 1000000000
+#define NUM_BASE_DIGIT 9
 
 typedef enum {
   SIGN_POS,
@@ -58,5 +59,6 @@ extern stat_t mul_num(const num_t *, const num_t *, num_t *);
 extern stat_t div_num(const num_t *, const num_t *, num_t *, num_t *);
 extern stat_t increment_num(const num_t *, num_t *);
 extern stat_t decrement_num(const num_t *, num_t *);
+extern stat_t sqrt2_inv(int32_t, num_t *);
 
 #endif // MULPREC_H
