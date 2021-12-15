@@ -173,6 +173,38 @@ bool is_zero(const num_t *num) {
   return true;
 }
 
+stat_t shift_left(const num_t *in, num_t *out, int32_t digit) {
+  if (NUM_LEN < in->len + digit)
+    return STAT_ERR;
+
+  for (int32_t i = in->len - 1; i >= 0; i--) {
+    out->n[i + digit] = in->n[i];
+  }
+
+  for (int32_t i = 0; i < digit; i++) {
+    out->n[i] = 0;
+  }
+
+  out->len = in->len + digit;
+
+  return STAT_OK;
+}
+
+stat_t shift_right(const num_t *in, num_t *out, int32_t digit) {
+  for (int32_t i = digit; i < in->len; i++) {
+    out->n[i - digit] = in->n[i];
+  }
+
+  out->len = in->len - digit;
+
+  if (out->len < 1) {
+    out->n[0] = 0;
+    out->len = 1;
+  }
+
+  return STAT_OK;
+}
+
 stat_t mul_by_base(const num_t *in, num_t *out) {
   set_sign(out, get_sign(in));
 
