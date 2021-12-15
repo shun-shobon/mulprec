@@ -284,7 +284,7 @@ static stat_t fix_num(num_t *num) {
   // 最終桁の繰り上がり/繰り下がり処理
   // XXX: 合ってるか不明
   while (num->len < NUM_LEN &&
-         (num->n[num->len - 1] < 0 || NUM_BASE <= num->n[NUM_LEN - 1])) {
+         (num->n[num->len - 1] < 0 || NUM_BASE <= num->n[num->len - 1])) {
     if (NUM_BASE <= num->n[num->len - 1]) {
       int64_t carry = num->n[num->len - 1] / NUM_BASE;
       num->n[num->len - 1] -= carry * NUM_BASE;
@@ -400,7 +400,7 @@ static stat_t div_num_single_nat(const num_t *a, const num_t *b, num_t *div,
   }
 
   div->len = a->len;
-  if (div->n[div->len - 1])
+  if (div->n[div->len - 1] == 0 && div->len != 1)
     div->len--;
 
   mod->len = 1;
