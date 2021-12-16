@@ -272,24 +272,18 @@ static stat_t sub_num_nat(const num_t *a, const num_t *b, num_t *out) {
 }
 
 static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
-  out->len = a->len + b->len - 1;
-
-#if 0
-  for (uint32_t i = 0; i < b->len; i++) {
-    for (uint32_t j = 0; j < a->len; j++) {
-      int64_t tmp = a->n[j] * b->n[i];
-
-      if (NUM_LEN - 1 < i + j && tmp != 0)
-        return STAT_ERR;
-
-      // WARNING: オーバーフローの可能性あり
-      out->n[i + j] += tmp;
+  if (min(a->len, b->len) < 2) {
+    for (uint32_t i = 0; i < b->len; i++) {
+      for (uint32_t j = 0; j < a->len; j++) {
+        out->n[i + j] = a->n[j] * b->n[i];
+      }
     }
+  } else {
+    int32_t n = get_convolution_size(a->len, b->len);
+    convolution(a->n, a->len, b->n, b->len, out->n, n);
   }
-#endif
 
-  int32_t n = get_convolution_size(a->len, b->len);
-  convolution(a->n, a->len, b->n, b->len, out->n, n);
+  out->len = a->len + b->len - 1;
 
   return fix_num(out);
 }

@@ -6,13 +6,17 @@
 #include "util.h"
 
 #define N 1000
-#define SHIFT 100
+#define SHIFT 200
 
-static num_t x_memo[N + 1];
-static num_t delta_x_memo[N];
-static num_t *binom_memo[N];
+static num_t *x_memo;
+static num_t *delta_x_memo;
+static num_t **binom_memo;
 
-void setup_binom() {
+void setup() {
+  x_memo = malloc_safe(sizeof(num_t) * N);
+  delta_x_memo = malloc_safe(sizeof(num_t) * N);
+
+  binom_memo = malloc_safe(sizeof(num_t *) * N);
   for (int32_t i = 0; i < N; i++) {
     binom_memo[i] = malloc_safe(sizeof(num_t) * N);
   }
@@ -84,7 +88,7 @@ void calc_delta_x(int32_t n, num_t *out) {
 
 int main(void) {
   setup_fft();
-  setup_binom();
+  setup();
 
   num_t two;
   set_int(2, &two);
@@ -98,8 +102,8 @@ int main(void) {
   num_t sum = ZERO_NUM;
   for (int32_t i = 0; i < N; i++) {
     if (((i + 1) * 100) % N == 0) {
-      printf("\rProcessing... %d%%", ((i + 1) * 100) / N);
-      fflush(stdout);
+      fprintf(stderr, "\rProcessing... %d%%", ((i + 1) * 100) / N);
+      fflush(stderr);
     }
 
     num_t ans;
@@ -123,7 +127,6 @@ int main(void) {
 
   shift_right(&pi, &pi, SHIFT);
 
-  printf("\n");
   print_num(&pi);
   printf("\n");
 }

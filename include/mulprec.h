@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_LEN 10000
+#define NUM_LEN 50000
 #define NUM_BASE 1000000000
 #define NUM_BASE_DIGIT 9
 
