@@ -40,7 +40,6 @@ typedef enum {
 
 extern void set_sign(num_t *, sign_t);
 extern sign_t get_sign(const num_t *);
-extern void clear_by_zero(num_t *);
 extern void print_num(const num_t *);
 extern stat_t input_num(const char *, num_t *);
 extern void set_rnd(num_t *, uint32_t);
@@ -48,8 +47,6 @@ extern void copy_num(const num_t *, num_t *);
 extern void abs_num(const num_t *, num_t *);
 extern stat_t shift_left(const num_t *, num_t *, int32_t);
 extern stat_t shift_right(const num_t *, num_t *, int32_t);
-extern stat_t mul_by_base(const num_t *, num_t *);
-extern int64_t div_by_base(const num_t *, num_t *);
 extern stat_t set_int(int64_t, num_t *);
 extern stat_t get_int(const num_t *, int64_t *);
 extern ord_t comp_num(const num_t *, const num_t *);

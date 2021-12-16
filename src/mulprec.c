@@ -13,94 +13,16 @@
 void set_sign(num_t *num, sign_t sign) { num->sign = sign; }
 sign_t get_sign(const num_t *num) { return num->sign; }
 
-void clear_by_zero(num_t *num) {
-  set_sign(num, SIGN_POS);
-
-  for (uint32_t i = 0; i < NUM_LEN; i++) {
-    num->n[i] = 0;
-  }
-
-  num->len = 1;
-}
-
 void print_num(const num_t *num) {
-#if 0
-  int64_t base = 10;
-
-  int64_t tmp[num->len];
-  for (uint32_t i = 0; i < num->len; i++)
-    tmp[i] = num->n[i];
-
-  char buf[(size_t)(log10(NUM_BASE) * num->len + 1)];
-  int32_t idx = 0;
-
-  int32_t start = num->len - 1;
-  while (start >= 0) {
-    int64_t carry = 0;
-    for (int32_t i = start; i >= 0; i--) {
-      int64_t val = carry * NUM_BASE + tmp[i];
-      tmp[i] = val / base;
-      carry = val % base;
-    }
-
-    buf[idx++] = (char)('0' + carry);
-
-    if (tmp[start] == 0)
-      start--;
-  }
-
-  if (num->sign == SIGN_NEG)
-    putchar('-');
-  for (int32_t i = idx - 1; i >= 0; i--)
-    putchar(buf[i]);
-#else
   if (num->sign == SIGN_NEG)
     putchar('-');
 
   printf("%" PRId64, num->n[num->len - 1]);
   for (int32_t i = num->len - 2; i >= 0; i--)
     printf("%09" PRId64, num->n[i]);
-#endif
 }
 
 stat_t input_num(const char *src, num_t *dst) {
-#if 0
-  int64_t base = 10;
-
-  if (src[0] == '-') {
-    set_sign(dst, SIGN_NEG);
-    src++;
-  } else {
-    set_sign(dst, SIGN_POS);
-  }
-
-  int32_t len = (int32_t)strlen(src);
-
-  int64_t tmp[len];
-  for (uint32_t i = 0; i < len; i++)
-    tmp[i] = src[len - i - 1] - '0';
-
-  dst->len = 0;
-
-  int32_t start = len - 1;
-  while (start >= 0) {
-    int64_t carry = 0;
-    for (int32_t i = start; i >= 0; i--) {
-      int64_t val = carry * base + tmp[i];
-      tmp[i] = val / NUM_BASE;
-      carry = val % NUM_BASE;
-    }
-
-    dst->n[dst->len++] = carry;
-    if (dst->len == NUM_LEN)
-      return STAT_ERR;
-
-    while (tmp[start] == 0)
-      start--;
-  }
-
-  return STAT_OK;
-#else
   if (src[0] == '-') {
     set_sign(dst, SIGN_NEG);
     src++;
@@ -132,7 +54,6 @@ stat_t input_num(const char *src, num_t *dst) {
   }
 
   return STAT_OK;
-#endif
 }
 
 void set_rnd(num_t *num, uint32_t k) {
@@ -204,52 +125,6 @@ stat_t shift_right(const num_t *in, num_t *out, int32_t digit) {
   }
 
   return STAT_OK;
-}
-
-stat_t mul_by_base(const num_t *in, num_t *out) {
-  set_sign(out, get_sign(in));
-
-  out->n[0] = 0;
-  for (uint32_t i = 0; i < in->len - 1; i++) {
-    out->n[i + 1] = in->n[i];
-  }
-
-  out->len = min(in->len + 1, NUM_LEN);
-
-  if (in->n[NUM_LEN - 1] == 0) {
-    return STAT_OK;
-  } else {
-    return STAT_ERR;
-  }
-}
-
-int64_t div_by_base(const num_t *in, num_t *out) {
-  if (in->len <= 1) {
-    set_sign(out, SIGN_POS);
-    out->len = 1;
-    out->n[0] = 0;
-    switch (get_sign(in)) {
-    case SIGN_POS:
-      return in->n[0];
-    case SIGN_NEG:
-      return -in->n[0];
-    }
-  }
-
-  set_sign(out, get_sign(in));
-
-  for (uint32_t i = 1; i < in->len; i++) {
-    out->n[i - 1] = in->n[i];
-  }
-
-  out->len = max(in->len - 1, 0);
-
-  switch (get_sign(in)) {
-  case SIGN_POS:
-    return in->n[0];
-  case SIGN_NEG:
-    return -in->n[0];
-  }
 }
 
 stat_t set_int(int64_t in, num_t *out) {
