@@ -3,61 +3,127 @@
 
 #include "fft.h"
 #include "mulprec.h"
+#include "util.h"
+
+#define N 1000
+#define SHIFT 100
+
+static num_t x_memo[N + 1];
+static num_t delta_x_memo[N];
+static num_t *binom_memo[N];
+
+void setup_binom() {
+  for (int32_t i = 0; i < N; i++) {
+    binom_memo[i] = malloc_safe(sizeof(num_t) * N);
+  }
+
+  set_int(1, &binom_memo[0][0]);
+  for (int32_t i = 1; i < N; i++) {
+    set_int(1, &binom_memo[i][0]);
+    set_int(1, &binom_memo[i][i]);
+    for (int32_t j = 1; j < i + 1; j++) {
+      add_num(&binom_memo[i - 1][j - 1], &binom_memo[i - 1][j],
+              &binom_memo[i][j]);
+    }
+  }
+}
+
+void calc_x(int32_t n, num_t *out) {
+  num_t upper = ZERO_NUM;
+  upper.len = SHIFT + 1;
+  upper.n[SHIFT] = 1;
+
+  num_t lower = ZERO_NUM;
+  num_t tmp;
+
+  num_t left;
+  lower.n[0] = 4 * n + 1;
+  div_num(&upper, &lower, &left, &tmp);
+
+  num_t right;
+  lower.n[0] = 4 * n + 3;
+  div_num(&upper, &lower, &right, &tmp);
+
+  add_num(&left, &right, out);
+}
+
+void calc_delta_x(int32_t n, num_t *out) {
+  calc_x(n, &x_memo[n]);
+
+  if (n == 0) {
+    copy_num(&x_memo[0], &delta_x_memo[0]);
+    copy_num(&x_memo[0], out);
+    return;
+  }
+
+  num_t sum = ZERO_NUM;
+  for (int32_t i = 0; i < n; i++) {
+    num_t *coefficient = &binom_memo[n - 1][i];
+
+    num_t item;
+    mul_num(coefficient, &x_memo[i + 1], &item);
+
+    if (n % 2 != 0) {
+      if (i % 2 == 0) {
+        add_num(&sum, &item, &sum);
+      } else {
+        sub_num(&sum, &item, &sum);
+      }
+    } else {
+      if (i % 2 == 0) {
+        sub_num(&sum, &item, &sum);
+      } else {
+        add_num(&sum, &item, &sum);
+      }
+    }
+  }
+
+  sub_num(&sum, &delta_x_memo[n - 1], &delta_x_memo[n]);
+  copy_num(&delta_x_memo[n], out);
+}
 
 int main(void) {
   setup_fft();
+  setup_binom();
 
-  int32_t shift = 2;
-
-  num_t four = ZERO_NUM;
-  four.n[0] = 4;
+  num_t two;
+  set_int(2, &two);
 
   num_t sqrt_inv;
-  sqrt2_inv(shift - 1, &sqrt_inv);
+  sqrt2_inv(SHIFT + 2, &sqrt_inv);
 
   num_t coefficient;
-  mul_num(&four, &sqrt_inv, &coefficient);
-
-  num_t numerator = ZERO_NUM;
-  numerator.len = shift + 1;
-  numerator.n[shift] = 1;
+  mul_num(&two, &sqrt_inv, &coefficient);
 
   num_t sum = ZERO_NUM;
-  int64_t n = 1000000;
-  for (int64_t i = 0; i < n; i++) {
-    if (((i + 1) * 100) % n == 0) {
-      printf("\rProcessing... %lld%%", ((i + 1) * 100) / n);
+  for (int32_t i = 0; i < N; i++) {
+    if (((i + 1) * 100) % N == 0) {
+      printf("\rProcessing... %d%%", ((i + 1) * 100) / N);
       fflush(stdout);
     }
-    num_t denominator = ZERO_NUM;
-    num_t tmp;
 
-    num_t l;
-    denominator.n[0] = 4 * i + 1;
-    div_num(&numerator, &denominator, &l, &tmp);
+    num_t ans;
+    calc_delta_x(i, &ans);
 
-    num_t r;
-    denominator.n[0] = 4 * i + 3;
-    div_num(&numerator, &denominator, &r, &tmp);
-
-    num_t lr;
-    add_num(&l, &r, &lr);
+    num_t tmp_div, tmp_mod;
+    for (int32_t j = 0; j < i; j++) {
+      div_num(&ans, &two, &tmp_div, &tmp_mod);
+      copy_num(&tmp_div, &ans);
+    }
 
     if (i % 2 == 0) {
-      add_num(&sum, &lr, &sum);
+      add_num(&sum, &ans, &sum);
     } else {
-      sub_num(&sum, &lr, &sum);
+      sub_num(&sum, &ans, &sum);
     }
   }
 
   num_t pi;
   mul_num(&coefficient, &sum, &pi);
 
-  shift_right(&pi, &pi, shift);
+  shift_right(&pi, &pi, SHIFT);
 
   printf("\n");
   print_num(&pi);
   printf("\n");
-
-  return 0;
 }

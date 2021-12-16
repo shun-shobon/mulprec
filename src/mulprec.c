@@ -474,8 +474,11 @@ stat_t add_num(const num_t *a, const num_t *b, num_t *out) {
   // a >= 0, b < 0 => a - |b|
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
     // |a| > |b| => a - |b|
-    if (comp_num_nat(a, b) == ORD_GT)
-      return sub_num_nat(a, b, out);
+    if (comp_num_nat(a, b) == ORD_GT) {
+      stat_t stat = sub_num_nat(a, b, out);
+      set_sign(out, SIGN_POS);
+      return stat;
+    }
     // |a| < |b| => -(a - |b|)
     else {
       stat_t stat = sub_num_nat(b, a, out);
@@ -486,8 +489,11 @@ stat_t add_num(const num_t *a, const num_t *b, num_t *out) {
   // a < 0, b >= 0 => b - |a|
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS) {
     // b > |a| => b - |a|
-    if (comp_num_nat(b, a) == ORD_GT)
-      return sub_num_nat(b, a, out);
+    if (comp_num_nat(b, a) == ORD_GT) {
+      stat_t stat = sub_num_nat(b, a, out);
+      set_sign(out, SIGN_POS);
+      return stat;
+    }
     // b < |a| => -(|a| - b)
     else {
       stat_t stat = sub_num_nat(a, b, out);
@@ -502,13 +508,17 @@ stat_t add_num(const num_t *a, const num_t *b, num_t *out) {
     return stat;
   }
 
-  return add_num_nat(a, b, out);
+  stat_t stat = add_num_nat(a, b, out);
+  set_sign(out, SIGN_POS);
+  return stat;
 }
 
 stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
   // a >= 0, b < 0 => a + |b|
   if (get_sign(a) == SIGN_POS && get_sign(b) == SIGN_NEG) {
-    return add_num_nat(a, b, out);
+    stat_t stat = add_num_nat(a, b, out);
+    set_sign(out, SIGN_POS);
+    return stat;
   }
   // a < 0, b >= 0 => -(|a| + b)
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_POS) {
@@ -519,8 +529,11 @@ stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
   // a < 0, b < 0 => |b| - |a|
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_NEG) {
     // |b| > |a| => |b| - |a|
-    if (comp_num_nat(b, a) == ORD_GT)
-      return sub_num_nat(b, a, out);
+    if (comp_num_nat(b, a) == ORD_GT) {
+      stat_t stat = sub_num_nat(b, a, out);
+      set_sign(out, SIGN_POS);
+      return stat;
+    }
     // |b| < |a| => -(|a| - |b|)
     else {
       stat_t stat = sub_num_nat(a, b, out);
@@ -535,7 +548,9 @@ stat_t sub_num(const num_t *a, const num_t *b, num_t *out) {
     return stat;
   }
 
-  return sub_num_nat(a, b, out);
+  stat_t stat = sub_num_nat(a, b, out);
+  set_sign(out, SIGN_POS);
+  return stat;
 }
 
 stat_t mul_num(const num_t *a, const num_t *b, num_t *out) {
@@ -553,10 +568,14 @@ stat_t mul_num(const num_t *a, const num_t *b, num_t *out) {
   }
   // a < 0, b < 0 => |a| * |b|
   if (get_sign(a) == SIGN_NEG && get_sign(b) == SIGN_NEG) {
-    return mul_num_nat(a, b, out);
+    stat_t stat = mul_num_nat(a, b, out);
+    set_sign(out, SIGN_POS);
+    return stat;
   }
 
-  return mul_num_nat(a, b, out);
+  stat_t stat = mul_num_nat(a, b, out);
+  set_sign(out, SIGN_POS);
+  return stat;
 }
 
 stat_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
