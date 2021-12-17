@@ -3,8 +3,8 @@
 
 #include "mulprec.h"
 
-#define N 1000
-#define SHIFT 120
+#define N 3400
+#define SHIFT 130
 
 static num_t x_memo[N + 1];
 static num_t delta_x_memo[N + 1];
