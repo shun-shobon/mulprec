@@ -1,31 +1,41 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "fft.h"
 #include "mulprec.h"
-#include "util.h"
 
 #define N 1000
 #define SHIFT 120
 
 static num_t x_memo[N + 1];
 static num_t delta_x_memo[N + 1];
-static num_t **binom_memo;
+static num_t binom_memo[N / 2];
 
-void setup() {
-  binom_memo = malloc_safe(sizeof(num_t *) * N);
-  for (int32_t i = 0; i < N; i++) {
-    binom_memo[i] = malloc_safe(sizeof(num_t) * N);
+num_t *get_binom(int32_t n, int32_t k) {
+  if (n / 2 < k) {
+    return &binom_memo[n - k];
+  } else {
+    return &binom_memo[k];
+  }
+}
+
+void update_binom(int32_t n) {
+  if (n == 0) {
+    set_int(1, &binom_memo[0]);
+    return;
   }
 
-  set_int(1, &binom_memo[0][0]);
-  for (int32_t i = 1; i < N; i++) {
-    set_int(1, &binom_memo[i][0]);
-    set_int(1, &binom_memo[i][i]);
-    for (int32_t j = 1; j < i + 1; j++) {
-      add_num(&binom_memo[i - 1][j - 1], &binom_memo[i - 1][j],
-              &binom_memo[i][j]);
+  num_t old = binom_memo[0];
+  int32_t loop = (n / 2) + 1;
+  for (int32_t i = 1; i < loop; i++) {
+    num_t new;
+    if (n % 2 != 0 || n / 2 != i) {
+      add_num(&old, get_binom(n - 1, i), &new);
+      copy_num(get_binom(n - 1, i), &old);
+    } else {
+      add_num(&old, &old, &new);
     }
+
+    copy_num(&new, get_binom(n, i));
   }
 }
 
@@ -57,9 +67,11 @@ void calc_delta_x(int32_t n, num_t *out) {
     return;
   }
 
+  update_binom(n - 1);
+
   num_t sum = ZERO_NUM;
   for (int32_t i = 0; i < n; i++) {
-    num_t *coefficient = &binom_memo[n - 1][i];
+    num_t *coefficient = get_binom(n - 1, i);
 
     num_t item;
     mul_num(coefficient, &x_memo[i + 1], &item);
@@ -84,9 +96,6 @@ void calc_delta_x(int32_t n, num_t *out) {
 }
 
 int main(void) {
-  setup_fft();
-  setup();
-
   num_t two;
   set_int(2, &two);
 

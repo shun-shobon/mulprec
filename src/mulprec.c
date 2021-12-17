@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fft.h"
-
 void set_sign(num_t *num, sign_t sign) { num->sign = sign; }
 sign_t get_sign(const num_t *num) { return num->sign; }
 
@@ -272,23 +270,16 @@ static stat_t sub_num_nat(const num_t *a, const num_t *b, num_t *out) {
 }
 
 static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
-  //  if (min(a->len, b->len) < 100) {
-  if (true) {
-    num_t tmp = ZERO_NUM;
-    tmp.len = a->len + b->len - 1;
+  num_t tmp = ZERO_NUM;
+  tmp.len = a->len + b->len - 1;
 
-    for (uint32_t i = 0; i < b->len; i++) {
-      for (uint32_t j = 0; j < a->len; j++) {
-        tmp.n[i + j] += a->n[j] * b->n[i];
-      }
+  for (uint32_t i = 0; i < b->len; i++) {
+    for (uint32_t j = 0; j < a->len; j++) {
+      tmp.n[i + j] += a->n[j] * b->n[i];
     }
-
-    copy_num(&tmp, out);
-  } else {
-    int32_t n = get_convolution_size(a->len, b->len);
-    convolution(a->n, a->len, b->n, b->len, out->n, n);
-    out->len = a->len + b->len - 1;
   }
+
+  copy_num(&tmp, out);
 
   return fix_num(out);
 }
