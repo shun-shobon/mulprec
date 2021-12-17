@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_LEN 50000
-#define NUM_BASE 1000000000
-#define NUM_BASE_DIGIT 9
+#define NUM_LEN 20000
+#define NUM_BASE 100000000
+#define NUM_BASE_DIGIT 8
 
 typedef enum {
   SIGN_POS,

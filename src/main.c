@@ -6,16 +6,13 @@
 #include "util.h"
 
 #define N 1000
-#define SHIFT 200
+#define SHIFT 120
 
-static num_t *x_memo;
-static num_t *delta_x_memo;
+static num_t x_memo[N + 1];
+static num_t delta_x_memo[N + 1];
 static num_t **binom_memo;
 
 void setup() {
-  x_memo = malloc_safe(sizeof(num_t) * N);
-  delta_x_memo = malloc_safe(sizeof(num_t) * N);
-
   binom_memo = malloc_safe(sizeof(num_t *) * N);
   for (int32_t i = 0; i < N; i++) {
     binom_memo[i] = malloc_safe(sizeof(num_t) * N);
@@ -94,7 +91,7 @@ int main(void) {
   set_int(2, &two);
 
   num_t sqrt_inv;
-  sqrt2_inv(SHIFT + 2, &sqrt_inv);
+  sqrt2_inv(SHIFT * 2, &sqrt_inv);
 
   num_t coefficient;
   mul_num(&two, &sqrt_inv, &coefficient);
@@ -127,6 +124,7 @@ int main(void) {
 
   shift_right(&pi, &pi, SHIFT);
 
+  printf("\n");
   print_num(&pi);
   printf("\n");
 }
