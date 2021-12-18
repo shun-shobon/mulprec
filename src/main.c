@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "mulprec.h"
 
@@ -96,6 +97,9 @@ void calc_delta_x(int32_t n, num_t *out) {
 }
 
 int main(void) {
+  struct timeval start;
+  gettimeofday(&start, NULL);
+
   num_t two;
   set_int(2, &two);
 
@@ -108,7 +112,7 @@ int main(void) {
   num_t sum = ZERO_NUM;
   for (int32_t i = 0; i < N; i++) {
     if (((i + 1) * 100) % N == 0) {
-      fprintf(stderr, "\rProcessing... %d%%", ((i + 1) * 100) / N);
+      fprintf(stderr, "\r計算中... %d%%", ((i + 1) * 100) / N);
       fflush(stderr);
     }
 
@@ -133,7 +137,17 @@ int main(void) {
 
   shift_right(&pi, &pi, SHIFT);
 
-  printf("\n");
+  fprintf(stderr, "\n実行完了\n");
+
   print_num(&pi);
   printf("\n");
+
+  struct timeval end;
+  gettimeofday(&end, NULL);
+
+  double time = (double)(end.tv_sec - start.tv_sec) +
+                ((end.tv_usec - start.tv_usec) / 100000.0);
+  fprintf(stderr, "実行時間: %.6lf秒\n", time);
+
+  return 0;
 }
