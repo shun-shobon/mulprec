@@ -12,12 +12,33 @@ void set_sign(num_t *num, sign_t sign) { num->sign = sign; }
 sign_t get_sign(const num_t *num) { return num->sign; }
 
 void print_num(const num_t *num) {
+  int64_t tmp[num->len];
+  for (int32_t i = 0; i < num->len; i++)
+    tmp[i] = num->n[i];
+
+  int64_t buf[(size_t)ceil(log10(NUM_BASE) / log10(NUM_DEC_MAX) * num->len)];
+  int32_t idx = 0;
+
+  int32_t start = num->len - 1;
+  while (start >= 0) {
+    int64_t carry = 0;
+    for (int32_t i = start; i >= 0; i--) {
+      int64_t val = carry * NUM_BASE + tmp[i];
+      tmp[i] = val / NUM_DEC_MAX;
+      carry = val % NUM_DEC_MAX;
+    }
+
+    buf[idx++] = carry;
+
+    while (tmp[start] == 0)
+      start--;
+  }
+
   if (num->sign == SIGN_NEG)
     putchar('-');
-
-  printf("%" PRId64, num->n[num->len - 1]);
-  for (int32_t i = num->len - 2; i >= 0; i--)
-    printf("%08" PRId64, num->n[i]);
+  printf("%" PRId64, buf[idx - 1]);
+  for (int32_t i = idx - 2; i >= 0; i--)
+    printf("%0" TO_STRING(NUM_BASE_DIGIT) PRId64, buf[i]);
 }
 
 stat_t input_num(const char *src, num_t *dst) {
@@ -32,11 +53,13 @@ stat_t input_num(const char *src, num_t *dst) {
 
   dst->len = 0;
 
-  for (int32_t i = len - 1; i >= 0; i -= 9) {
+  int64_t tmp[(size_t)ceil((double)len / NUM_BASE_DIGIT)];
+  int32_t idx = 0;
+  for (int32_t i = len - 1; i >= 0; i -= NUM_BASE_DIGIT) {
     int64_t val = 0;
     int64_t pow = 1;
     bool brk = false;
-    for (int32_t j = 0; j < 9; j++) {
+    for (int32_t j = 0; j < NUM_BASE_DIGIT; j++) {
       if (i - j < 0) {
         brk = true;
         break;
@@ -46,9 +69,26 @@ stat_t input_num(const char *src, num_t *dst) {
     }
     if (dst->len == NUM_LEN)
       return STAT_ERR;
-    dst->n[dst->len++] = val;
+    tmp[idx++] = val;
     if (brk)
       break;
+  }
+
+  int32_t start = idx - 1;
+  while (start >= 0) {
+    int64_t carry = 0;
+    for (int32_t i = start; i >= 0; i--) {
+      int64_t val = carry * NUM_DEC_MAX + tmp[i];
+      tmp[i] = val / NUM_BASE;
+      carry = val % NUM_BASE;
+    }
+
+    dst->n[dst->len++] = carry;
+    if (dst->len == NUM_LEN)
+      return STAT_ERR;
+
+    while (tmp[start] == 0)
+      start--;
   }
 
   return STAT_OK;

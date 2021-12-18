@@ -5,9 +5,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_LEN 20000
-#define NUM_BASE 100000000
-#define NUM_BASE_DIGIT 8
+// clang-format off
+#define NUM_LEN        1000
+#define NUM_BASE       67108864
+#define NUM_DEC_MAX    10000000
+#define NUM_BASE_DIGIT 7
+// clang-format on
 
 typedef enum {
   SIGN_POS,
@@ -30,6 +33,9 @@ typedef enum {
   ORD_EQ,
   ORD_GT,
 } ord_t;
+
+#define STRINGIFY(x) #x
+#define TO_STRING(x) STRINGIFY(x)
 
 #define ZERO_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {0}})
 #define ONE_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {1}})
