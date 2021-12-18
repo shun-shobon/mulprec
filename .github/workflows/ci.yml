@@ -16,5 +16,5 @@ jobs:
       - name: Build
         run: cmake --build build
 
-      - name: Test
-        run: time ./test.sh
+      - name: Run
+        run: python3 start.py
