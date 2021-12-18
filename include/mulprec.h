@@ -35,27 +35,23 @@ typedef enum {
 #define ONE_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {1}})
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
 #define index_or_zero(num, i) ((i) < (num)->len ? (num)->n[i] : 0)
 
-extern void set_sign(num_t *, sign_t);
-extern sign_t get_sign(const num_t *);
+extern inline void set_sign(num_t *, sign_t);
+extern inline sign_t get_sign(const num_t *);
 extern void print_num(const num_t *);
 extern stat_t input_num(const char *, num_t *);
 extern void set_rnd(num_t *, uint32_t);
 extern void copy_num(const num_t *, num_t *);
-extern void abs_num(const num_t *, num_t *);
 extern stat_t shift_left(const num_t *, num_t *, int32_t);
 extern stat_t shift_right(const num_t *, num_t *, int32_t);
 extern stat_t set_int(int64_t, num_t *);
-extern stat_t get_int(const num_t *, int64_t *);
 extern ord_t comp_num(const num_t *, const num_t *);
 extern stat_t add_num(const num_t *, const num_t *, num_t *);
 extern stat_t sub_num(const num_t *, const num_t *, num_t *);
 extern stat_t mul_num(const num_t *, const num_t *, num_t *);
 extern stat_t div_num(const num_t *, const num_t *, num_t *, num_t *);
 extern stat_t increment_num(const num_t *, num_t *);
-extern stat_t decrement_num(const num_t *, num_t *);
-extern stat_t sqrt2_inv(int32_t, num_t *);
+extern stat_t calc_sqrt2_inv(int32_t, num_t *);
 
 #endif // MULPREC_H

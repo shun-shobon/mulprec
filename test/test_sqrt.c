@@ -7,7 +7,7 @@ int main() {
   setup_fft();
 
   num_t inv;
-  sqrt2_inv(240, &inv);
+  calc_sqrt2_inv(240, &inv);
 
   num_t two;
   set_int(2, &two);

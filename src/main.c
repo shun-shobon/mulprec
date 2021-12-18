@@ -8,34 +8,34 @@
 
 static num_t x_memo[N + 1];
 static num_t delta_x_memo[N + 1];
-static num_t binom_memo[N / 2];
+static num_t nck_memo[N / 2];
 
-num_t *get_binom(int32_t n, int32_t k) {
+num_t *get_nck(int32_t n, int32_t k) {
   if (n / 2 < k) {
-    return &binom_memo[n - k];
+    return &nck_memo[n - k];
   } else {
-    return &binom_memo[k];
+    return &nck_memo[k];
   }
 }
 
-void update_binom(int32_t n) {
+void update_nck(int32_t n) {
   if (n == 0) {
-    set_int(1, &binom_memo[0]);
+    set_int(1, &nck_memo[0]);
     return;
   }
 
-  num_t old = binom_memo[0];
+  num_t old = nck_memo[0];
   int32_t loop = (n / 2) + 1;
   for (int32_t i = 1; i < loop; i++) {
     num_t new;
     if (n % 2 != 0 || n / 2 != i) {
-      add_num(&old, get_binom(n - 1, i), &new);
-      copy_num(get_binom(n - 1, i), &old);
+      add_num(&old, get_nck(n - 1, i), &new);
+      copy_num(get_nck(n - 1, i), &old);
     } else {
       add_num(&old, &old, &new);
     }
 
-    copy_num(&new, get_binom(n, i));
+    copy_num(&new, get_nck(n, i));
   }
 }
 
@@ -67,11 +67,11 @@ void calc_delta_x(int32_t n, num_t *out) {
     return;
   }
 
-  update_binom(n - 1);
+  update_nck(n - 1);
 
   num_t sum = ZERO_NUM;
   for (int32_t i = 0; i < n; i++) {
-    num_t *coefficient = get_binom(n - 1, i);
+    num_t *coefficient = get_nck(n - 1, i);
 
     num_t item;
     mul_num(coefficient, &x_memo[i + 1], &item);
@@ -99,11 +99,11 @@ int main(void) {
   num_t two;
   set_int(2, &two);
 
-  num_t sqrt_inv;
-  sqrt2_inv(SHIFT * 2, &sqrt_inv);
+  num_t sqrt2_inv;
+  calc_sqrt2_inv(SHIFT * 2, &sqrt2_inv);
 
   num_t coefficient;
-  mul_num(&two, &sqrt_inv, &coefficient);
+  mul_num(&two, &sqrt2_inv, &coefficient);
 
   num_t sum = ZERO_NUM;
   for (int32_t i = 0; i < N; i++) {

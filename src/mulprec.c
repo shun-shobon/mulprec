@@ -150,28 +150,6 @@ stat_t set_int(int64_t in, num_t *out) {
   }
 }
 
-stat_t get_int(const num_t *in, int64_t *out) {
-  num_t min, max;
-  set_int(INT64_MIN + 1, &min);
-  set_int(INT64_MAX, &max);
-
-  if (comp_num(in, &min) == ORD_LT || comp_num(&max, in) == ORD_LT)
-    return STAT_ERR;
-
-  int64_t sign = get_sign(in) == SIGN_POS ? 1 : -1;
-
-  for (uint32_t i = 0; i < in->len; i++) {
-    int64_t pow = 1;
-    for (uint32_t j = 0; j < i; j++)
-      pow *= NUM_BASE;
-    *out += in->n[i] * pow;
-  }
-
-  *out *= sign;
-
-  return STAT_OK;
-}
-
 static stat_t fix_num(num_t *num) {
   // 通常の繰り上がり/繰り下がり処理
   for (uint32_t i = 0; i < num->len - 1; i++) {
@@ -471,11 +449,7 @@ stat_t increment_num(const num_t *in, num_t *out) {
   return add_num(in, &ONE_NUM, out);
 }
 
-stat_t decrement_num(const num_t *in, num_t *out) {
-  return sub_num(in, &ONE_NUM, out);
-}
-
-stat_t sqrt2_inv(int32_t digit, num_t *out) {
+stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
   int32_t loop = (int32_t)ceil(log2(digit * NUM_BASE_DIGIT)) + 1;
 
   int32_t offset = 2;
