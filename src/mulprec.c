@@ -165,6 +165,47 @@ stat_t shift_right(const num_t *in, num_t *out, int32_t digit) {
   return STAT_OK;
 }
 
+stat_t bit_shift_left(const num_t *in, num_t *out, int32_t bit) {
+  int32_t shift_digit = bit / NUM_BASE_POW_2;
+  int32_t shift_bit = bit % NUM_BASE_POW_2;
+  int32_t mask_bit = (1 << NUM_BASE_POW_2) - 1;
+
+  shift_left(in, out, shift_digit);
+
+  out->n[out->len] = 0;
+  for (int32_t i = out->len - 1; i >= 0; i--) {
+    out->n[i] <<= shift_bit;
+    int64_t amount = out->n[i] & mask_bit;
+    out->n[i + 1] |= (out->n[i] ^ amount) >> NUM_BASE_POW_2;
+    out->n[i] = amount;
+  }
+
+  if (out->n[out->len] != 0)
+    out->len++;
+
+  return STAT_OK;
+}
+
+stat_t bit_shift_right(const num_t *in, num_t *out, int32_t bit) {
+  int32_t shift_digit = bit / NUM_BASE_POW_2;
+  int32_t shift_bit = bit % NUM_BASE_POW_2;
+  int32_t mask_bit = (1 << shift_bit) - 1;
+
+  shift_right(in, out, shift_digit);
+
+  for (int32_t i = out->len - 1; i >= 1; i--) {
+    int64_t overflow = out->n[i] & mask_bit;
+    out->n[i - 1] |= overflow << NUM_BASE_POW_2;
+    out->n[i] >>= shift_bit;
+  }
+  out->n[0] >>= shift_bit;
+
+  if (out->n[out->len - 1] == 0)
+    out->len--;
+
+  return STAT_OK;
+}
+
 stat_t set_int(int64_t in, num_t *out) {
   *out = ZERO_NUM;
 

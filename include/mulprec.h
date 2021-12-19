@@ -6,10 +6,13 @@
 #include <stdlib.h>
 
 // clang-format off
+// 10 ^ NUM_BASE_DIGIT = NUM_DEC_MAX <= NUM_BASE
+// 2 ^ NUM_BASE_POW_2 = NUM_BASE
 #define NUM_LEN        1000
 #define NUM_BASE       67108864
 #define NUM_DEC_MAX    10000000
 #define NUM_BASE_DIGIT 7
+#define NUM_BASE_POW_2 26
 // clang-format on
 
 typedef enum {
@@ -51,6 +54,8 @@ extern void set_rnd(num_t *, uint32_t);
 extern void copy_num(const num_t *, num_t *);
 extern stat_t shift_left(const num_t *, num_t *, int32_t);
 extern stat_t shift_right(const num_t *, num_t *, int32_t);
+extern stat_t bit_shift_left(const num_t *, num_t *, int32_t);
+extern stat_t bit_shift_right(const num_t *, num_t *, int32_t);
 extern stat_t set_int(int64_t, num_t *);
 extern ord_t comp_num(const num_t *, const num_t *);
 extern stat_t add_num(const num_t *, const num_t *, num_t *);
