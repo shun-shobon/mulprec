@@ -1,19 +1,13 @@
 #include <stdio.h>
 
-#include "fft.h"
 #include "mulprec.h"
 
 int main() {
-  setup_fft();
-
   num_t inv;
   calc_sqrt2_inv(100, &inv);
 
-  num_t two;
-  set_int(2, &two);
-
   num_t out;
-  mul_num(&inv, &two, &out);
+  bit_shift_left(&inv, &out, 1);
 
   print_num(&out);
   printf("\n");

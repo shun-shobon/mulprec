@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "fft.h"
 #include "mulprec.h"
 #include "util.h"
 
@@ -9,8 +8,6 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Usage: %s <x> <y>\n", argv[0]);
     return 1;
   }
-
-  setup_fft();
 
   num_t x, y, z;
 
