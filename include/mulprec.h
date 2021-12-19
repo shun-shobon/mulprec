@@ -8,7 +8,7 @@
 // clang-format off
 // 10 ^ NUM_BASE_DIGIT = NUM_DEC_MAX <= NUM_BASE
 // 2 ^ NUM_BASE_POW_2 = NUM_BASE
-#define NUM_LEN        1000
+#define NUM_LEN        500
 #define NUM_BASE       67108864
 #define NUM_DEC_MAX    10000000
 #define NUM_BASE_DIGIT 7

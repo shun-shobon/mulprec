@@ -119,11 +119,7 @@ int main(void) {
     num_t ans;
     calc_delta_x(i, &ans);
 
-    num_t tmp_div, tmp_mod;
-    for (int32_t j = 0; j < i; j++) {
-      div_num(&ans, &two, &tmp_div, &tmp_mod);
-      copy_num(&tmp_div, &ans);
-    }
+    bit_shift_right(&ans, &ans, i);
 
     if (i % 2 == 0) {
       add_num(&sum, &ans, &sum);

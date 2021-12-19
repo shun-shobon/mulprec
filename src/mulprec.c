@@ -559,8 +559,7 @@ stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
 
     mul_num(&tmp, &x, &tmp);
 
-    shift_right(&tmp, &tmp, digit);
-    div_num(&tmp, &two, &new_x, &tmp);
+    bit_shift_right(&tmp, &new_x, digit * NUM_BASE_POW_2 + 1);
 
     if (comp_num(&x, &new_x) == ORD_EQ)
       break;
@@ -578,5 +577,6 @@ stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
 
   mul_num(&x, &pow, &x);
   shift_right(&x, out, digit);
+  set_sign(out, SIGN_POS);
   return STAT_OK;
 }
