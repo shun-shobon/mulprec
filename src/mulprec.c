@@ -160,7 +160,7 @@ stat_t bit_shift_left(const num_t *in, num_t *out, int32_t bit) {
     out->n[i] <<= shift_bit;
     int64_t amount = out->n[i] & mask_bit;
     int64_t overflow = (out->n[i] ^ amount) >> NUM_BASE_POW_2;
-    if (i == out->len - 1 && out->len < NUM_LEN)
+    if (i == out->len - 1 && NUM_LEN <= out->len)
       return STAT_OVERFLOW;
     out->n[i + 1] |= overflow;
     out->n[i] = amount;
