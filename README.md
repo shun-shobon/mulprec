@@ -6,6 +6,7 @@
 
 - C compiler
 - CMake >= 3.1
+- Python
 
 ## Usage
 
@@ -19,6 +20,12 @@ cmake -B build
 
 ```shell
 cmake --build build
+```
+
+### Start
+
+```shell
+python3 start.py
 ```
 
 ### Run tests
