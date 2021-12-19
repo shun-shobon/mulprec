@@ -254,7 +254,8 @@ static stat_t fix_num(num_t *num) {
     num->len--;
 
   // オーバーフロー/アンダーフロー判定
-  if (0 <= num->n[NUM_LEN - 1] && num->n[NUM_LEN - 1] < NUM_BASE)
+  if (num->len <= NUM_LEN ||
+      (0 <= num->n[NUM_LEN - 1] && num->n[NUM_LEN - 1] < NUM_BASE))
     return STAT_OK;
   else
     return STAT_OVERFLOW;
