@@ -54,9 +54,9 @@ static int64_t mpow(int64_t a, int64_t n, int64_t mod) {
 
 #define NTT_LEN 3
 static ntt_t ntts[NTT_LEN] = {
-    {2013265921, 27, 137},
-    {469762049, 26, 30},
-    {1811939329, 26, 136},
+    {2013265921, 27, 137, NULL, NULL},
+    {469762049, 26, 30, NULL, NULL},
+    {1811939329, 26, 136, NULL, NULL},
 };
 
 static void calc_roots(ntt_t *ntt) {

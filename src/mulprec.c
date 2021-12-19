@@ -98,7 +98,7 @@ void copy_num(const num_t *src, num_t *dst) {
 
   dst->len = src->len;
 
-  for (uint32_t i = 0; i < src->len; i++) {
+  for (int32_t i = 0; i < src->len; i++) {
     dst->n[i] = src->n[i];
   }
 }
@@ -107,7 +107,7 @@ bool is_zero(const num_t *num) {
   if (get_sign(num) == SIGN_NEG)
     return false;
 
-  for (uint32_t i = 0; i < num->len; i++) {
+  for (int32_t i = 0; i < num->len; i++) {
     if (num->n[i] != 0)
       return false;
   }
@@ -219,7 +219,7 @@ stat_t set_int(int64_t in, num_t *out) {
 
 static stat_t fix_num(num_t *num) {
   // 通常の繰り上がり/繰り下がり処理
-  for (uint32_t i = 0; i < num->len - 1; i++) {
+  for (int32_t i = 0; i < num->len - 1; i++) {
     if (NUM_BASE <= num->n[i]) {
       int64_t carry = num->n[i] / NUM_BASE;
       num->n[i] -= carry * NUM_BASE;
@@ -297,7 +297,7 @@ ord_t comp_num(const num_t *a, const num_t *b) {
 static stat_t add_num_nat(const num_t *a, const num_t *b, num_t *out) {
   int32_t len = max(a->len, b->len);
 
-  for (uint32_t i = 0; i < len; i++) {
+  for (int32_t i = 0; i < len; i++) {
     out->n[i] = index_or_zero(a, i) + index_or_zero(b, i);
   }
 
@@ -309,7 +309,7 @@ static stat_t add_num_nat(const num_t *a, const num_t *b, num_t *out) {
 static stat_t sub_num_nat(const num_t *a, const num_t *b, num_t *out) {
   int32_t len = max(a->len, b->len);
 
-  for (uint32_t i = 0; i < len; i++) {
+  for (int32_t i = 0; i < len; i++) {
     out->n[i] = index_or_zero(a, i) - index_or_zero(b, i);
   }
 
@@ -322,8 +322,8 @@ static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
   num_t tmp = ZERO_NUM;
   tmp.len = a->len + b->len - 1;
 
-  for (uint32_t i = 0; i < b->len; i++) {
-    for (uint32_t j = 0; j < a->len; j++) {
+  for (int32_t i = 0; i < b->len; i++) {
+    for (int32_t j = 0; j < a->len; j++) {
       tmp.n[i + j] += a->n[j] * b->n[i];
     }
   }
