@@ -534,6 +534,22 @@ stat_t increment_num(const num_t *in, num_t *out) {
   return add_num(in, &ONE_NUM, out);
 }
 
+stat_t pow_num(const num_t *a, int64_t b, num_t *out) {
+  num_t pow;
+  copy_num(a, &pow);
+
+  set_int(1, out);
+  while (b > 0) {
+    if (b & 1) {
+      mul_num(out, &pow, out);
+    }
+    mul_num(&pow, &pow, &pow);
+    b >>= 1;
+  }
+
+  return STAT_OK;
+}
+
 stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
   num_t x = ZERO_NUM;
   num_t two = ZERO_NUM;
@@ -568,12 +584,10 @@ stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
   }
 
   int32_t n = (int32_t)ceil(log10(NUM_BASE) * digit);
-  num_t pow;
-  set_int(1, &pow);
   num_t ten;
   set_int(10, &ten);
-  for (int32_t i = 0; i < n; i++)
-    mul_num(&pow, &ten, &pow);
+  num_t pow;
+  pow_num(&ten, n, &pow);
 
   mul_num(&x, &pow, &x);
   shift_right(&x, out, digit);
