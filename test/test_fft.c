@@ -6,7 +6,7 @@
 
 void print_array(const int64_t *f, int64_t n) {
   for (uint32_t i = 0; i < n; i++) {
-    printf("%lld", f[i]);
+    printf("%" PRId64, f[i]);
     if (i != n - 1)
       printf(" ");
   }

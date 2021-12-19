@@ -46,8 +46,8 @@ typedef enum {
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define index_or_zero(num, i) ((i) < (num)->len ? (num)->n[i] : 0)
 
-extern inline void set_sign(num_t *, sign_t);
-extern inline sign_t get_sign(const num_t *);
+extern void set_sign(num_t *, sign_t);
+extern sign_t get_sign(const num_t *);
 extern void print_num(const num_t *);
 extern stat_t input_num(const char *, num_t *);
 extern void set_rnd(num_t *, uint32_t);
