@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <sys/time.h>
+#include <time.h>
 
 #include "mulprec.h"
 
@@ -97,8 +97,8 @@ void calc_delta_x(int32_t n, num_t *out) {
 }
 
 int main(void) {
-  struct timeval start;
-  gettimeofday(&start, NULL);
+  struct timespec start;
+  timespec_get(&start, TIME_UTC);
 
   num_t two;
   set_int(2, &two);
@@ -138,12 +138,16 @@ int main(void) {
   print_num(&pi);
   printf("\n");
 
-  struct timeval end;
-  gettimeofday(&end, NULL);
+  struct timespec end;
+  timespec_get(&end, TIME_UTC);
 
-  double time = (double)(end.tv_sec - start.tv_sec) +
-                ((end.tv_usec - start.tv_usec) / 100000.0);
-  fprintf(stderr, "実行時間: %.6lf秒\n", time);
+  time_t sec = end.tv_sec - start.tv_sec;
+  long nano = end.tv_nsec - start.tv_nsec;
+  if (nano < 0) {
+    sec--;
+    nano = 1000000000 + nano;
+  }
+  fprintf(stderr, "実行時間: %ld.%09ld秒\n", sec, nano);
 
   return 0;
 }
