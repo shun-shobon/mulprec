@@ -27,8 +27,10 @@ typedef struct {
 } num_t;
 
 typedef enum {
-  STAT_OK,
-  STAT_ERR,
+  STAT_OK = 0,
+  STAT_OVERFLOW,
+  STAT_ZERO_DIV,
+  STAT_UNKNOWN,
 } stat_t;
 
 typedef enum {
@@ -40,6 +42,13 @@ typedef enum {
 #define STRINGIFY(x) #x
 #define TO_STRING(x) STRINGIFY(x)
 
+#define guard_stat(x)                                                          \
+  {                                                                            \
+    stat_t stat = x;                                                           \
+    if (stat != STAT_OK)                                                       \
+      return stat;                                                             \
+  }
+
 #define ZERO_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {0}})
 #define ONE_NUM ((num_t){.sign = SIGN_POS, .len = 1, .n = {1}})
 
@@ -50,7 +59,6 @@ extern void set_sign(num_t *, sign_t);
 extern sign_t get_sign(const num_t *);
 extern void print_num(const num_t *);
 extern stat_t input_num(const char *, num_t *);
-extern void set_rnd(num_t *, uint32_t);
 extern void copy_num(const num_t *, num_t *);
 extern stat_t shift_left(const num_t *, num_t *, int32_t);
 extern stat_t shift_right(const num_t *, num_t *, int32_t);

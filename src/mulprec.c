@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 void set_sign(num_t *num, sign_t sign) { num->sign = sign; }
@@ -68,7 +67,7 @@ stat_t input_num(const char *src, num_t *dst) {
       pow *= 10;
     }
     if (dst->len == NUM_LEN)
-      return STAT_ERR;
+      return STAT_OVERFLOW;
     tmp[idx++] = val;
     if (brk)
       break;
@@ -85,24 +84,13 @@ stat_t input_num(const char *src, num_t *dst) {
 
     dst->n[dst->len++] = carry;
     if (dst->len == NUM_LEN)
-      return STAT_ERR;
+      return STAT_OVERFLOW;
 
     while (tmp[start] == 0)
       start--;
   }
 
   return STAT_OK;
-}
-
-void set_rnd(num_t *num, uint32_t k) {
-  if (random() % 2 == 0)
-    set_sign(num, SIGN_NEG);
-
-  for (uint32_t i = 0; i < k; i++) {
-    num->n[i] = random() % NUM_BASE;
-  }
-
-  num->len = (int32_t)k;
 }
 
 void copy_num(const num_t *src, num_t *dst) {
@@ -113,12 +101,6 @@ void copy_num(const num_t *src, num_t *dst) {
   for (uint32_t i = 0; i < src->len; i++) {
     dst->n[i] = src->n[i];
   }
-}
-
-void abs_num(const num_t *in, num_t *out) {
-  copy_num(in, out);
-
-  set_sign(out, SIGN_POS);
 }
 
 bool is_zero(const num_t *num) {
@@ -135,7 +117,7 @@ bool is_zero(const num_t *num) {
 
 stat_t shift_left(const num_t *in, num_t *out, int32_t digit) {
   if (NUM_LEN < in->len + digit)
-    return STAT_ERR;
+    return STAT_OVERFLOW;
 
   for (int32_t i = in->len - 1; i >= 0; i--) {
     out->n[i + digit] = in->n[i];
@@ -170,13 +152,17 @@ stat_t bit_shift_left(const num_t *in, num_t *out, int32_t bit) {
   int32_t shift_bit = bit % NUM_BASE_POW_2;
   int32_t mask_bit = (1 << NUM_BASE_POW_2) - 1;
 
-  shift_left(in, out, shift_digit);
+  guard_stat(shift_left(in, out, shift_digit));
 
-  out->n[out->len] = 0;
+  if (out->len < NUM_LEN)
+    out->n[out->len] = 0;
   for (int32_t i = out->len - 1; i >= 0; i--) {
     out->n[i] <<= shift_bit;
     int64_t amount = out->n[i] & mask_bit;
-    out->n[i + 1] |= (out->n[i] ^ amount) >> NUM_BASE_POW_2;
+    int64_t overflow = (out->n[i] ^ amount) >> NUM_BASE_POW_2;
+    if (i == out->len - 1 && out->len < NUM_LEN)
+      return STAT_OVERFLOW;
+    out->n[i + 1] |= overflow;
     out->n[i] = amount;
   }
 
@@ -191,7 +177,7 @@ stat_t bit_shift_right(const num_t *in, num_t *out, int32_t bit) {
   int32_t shift_bit = bit % NUM_BASE_POW_2;
   int32_t mask_bit = (1 << shift_bit) - 1;
 
-  shift_right(in, out, shift_digit);
+  guard_stat(shift_right(in, out, shift_digit));
 
   for (int32_t i = out->len - 1; i >= 1; i--) {
     int64_t overflow = out->n[i] & mask_bit;
@@ -227,7 +213,7 @@ stat_t set_int(int64_t in, num_t *out) {
     return STAT_OK;
   } else {
     out->len = NUM_LEN;
-    return STAT_ERR;
+    return STAT_OVERFLOW;
   }
 }
 
@@ -271,7 +257,7 @@ static stat_t fix_num(num_t *num) {
   if (0 <= num->n[NUM_LEN - 1] && num->n[NUM_LEN - 1] < NUM_BASE)
     return STAT_OK;
   else
-    return STAT_ERR;
+    return STAT_OVERFLOW;
 }
 
 static ord_t comp_num_nat(const num_t *a, const num_t *b) {
@@ -350,7 +336,7 @@ static stat_t mul_num_nat(const num_t *a, const num_t *b, num_t *out) {
 static stat_t div_num_single_nat(const num_t *a, const num_t *b, num_t *div,
                                  num_t *mod) {
   if (b->n[0] == 0)
-    return STAT_ERR;
+    return STAT_ZERO_DIV;
 
   int64_t carry = 0;
 
@@ -376,7 +362,7 @@ static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
     return div_num_single_nat(a, b, div, mod);
 
   if (is_zero(b))
-    return STAT_ERR;
+    return STAT_ZERO_DIV;
 
   num_t tmp = ZERO_NUM;
 
@@ -385,9 +371,9 @@ static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
     if (comp_num_nat(mod, b) == ORD_LT)
       break;
 
-    sub_num_nat(mod, b, mod);
+    guard_stat(sub_num_nat(mod, b, mod));
 
-    increment_num(&tmp, &tmp);
+    guard_stat(increment_num(&tmp, &tmp));
   }
 
   copy_num(&tmp, div);
@@ -538,12 +524,12 @@ stat_t pow_num(const num_t *a, int64_t b, num_t *out) {
   num_t pow;
   copy_num(a, &pow);
 
-  set_int(1, out);
+  guard_stat(set_int(1, out));
   while (b > 0) {
     if (b & 1) {
-      mul_num(out, &pow, out);
+      guard_stat(mul_num(out, &pow, out));
     }
-    mul_num(&pow, &pow, &pow);
+    guard_stat(mul_num(&pow, &pow, &pow));
     b >>= 1;
   }
 
@@ -567,15 +553,15 @@ stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
     num_t new_x;
 
     num_t tmp;
-    mul_num(&x, &x, &tmp);
-    mul_num(&tmp, &two, &tmp);
-    shift_right(&tmp, &tmp, digit);
+    guard_stat(mul_num(&x, &x, &tmp));
+    guard_stat(mul_num(&tmp, &two, &tmp));
+    guard_stat(shift_right(&tmp, &tmp, digit));
 
-    sub_num(&three, &tmp, &tmp);
+    guard_stat(sub_num(&three, &tmp, &tmp));
 
-    mul_num(&tmp, &x, &tmp);
+    guard_stat(mul_num(&tmp, &x, &tmp));
 
-    bit_shift_right(&tmp, &new_x, digit * NUM_BASE_POW_2 + 1);
+    guard_stat(bit_shift_right(&tmp, &new_x, digit * NUM_BASE_POW_2 + 1));
 
     if (comp_num(&x, &new_x) == ORD_EQ)
       break;
@@ -585,12 +571,12 @@ stat_t calc_sqrt2_inv(int32_t digit, num_t *out) {
 
   int32_t n = (int32_t)ceil(log10(NUM_BASE) * digit);
   num_t ten;
-  set_int(10, &ten);
+  guard_stat(set_int(10, &ten));
   num_t pow;
-  pow_num(&ten, n, &pow);
+  guard_stat(pow_num(&ten, n, &pow));
 
-  mul_num(&x, &pow, &x);
-  shift_right(&x, out, digit);
+  guard_stat(mul_num(&x, &pow, &x));
+  guard_stat(shift_right(&x, out, digit));
   set_sign(out, SIGN_POS);
   return STAT_OK;
 }
