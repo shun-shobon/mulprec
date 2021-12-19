@@ -104,7 +104,7 @@ int main(void) {
   set_int(2, &two);
 
   num_t sqrt2_inv;
-  calc_sqrt2_inv(SHIFT * 2, &sqrt2_inv);
+  calc_sqrt2_inv(SHIFT, &sqrt2_inv);
 
   num_t coefficient;
   mul_num(&two, &sqrt2_inv, &coefficient);
