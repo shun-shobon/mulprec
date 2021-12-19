@@ -1,5 +1,4 @@
-#ifndef MULPREC_H
-#define MULPREC_H
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -72,5 +71,3 @@ extern stat_t mul_num(const num_t *, const num_t *, num_t *);
 extern stat_t div_num(const num_t *, const num_t *, num_t *, num_t *);
 extern stat_t increment_num(const num_t *, num_t *);
 extern stat_t calc_sqrt2_inv(int32_t, num_t *);
-
-#endif // MULPREC_H
