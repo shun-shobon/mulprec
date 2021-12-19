@@ -268,21 +268,25 @@ ord_t comp_num(const num_t *a, const num_t *b) {
 }
 
 static stat_t add_num_nat(const num_t *a, const num_t *b, num_t *out) {
-  out->len = max(a->len, b->len);
+  int32_t len = max(a->len, b->len);
 
-  for (uint32_t i = 0; i < out->len; i++) {
+  for (uint32_t i = 0; i < len; i++) {
     out->n[i] = index_or_zero(a, i) + index_or_zero(b, i);
   }
+
+  out->len = len;
 
   return fix_num(out);
 }
 
 static stat_t sub_num_nat(const num_t *a, const num_t *b, num_t *out) {
-  out->len = max(a->len, b->len);
+  int32_t len = max(a->len, b->len);
 
-  for (uint32_t i = 0; i < out->len; i++) {
+  for (uint32_t i = 0; i < len; i++) {
     out->n[i] = index_or_zero(a, i) - index_or_zero(b, i);
   }
+
+  out->len = len;
 
   return fix_num(out);
 }
@@ -327,28 +331,25 @@ static stat_t div_num_single_nat(const num_t *a, const num_t *b, num_t *div,
 
 static stat_t div_num_nat(const num_t *a, const num_t *b, num_t *div,
                           num_t *mod) {
-  *div = ZERO_NUM;
-  *mod = ZERO_NUM;
-
   if (b->len == 1)
     return div_num_single_nat(a, b, div, mod);
 
   if (is_zero(b))
     return STAT_ERR;
 
-  num_t tmp;
+  num_t tmp = ZERO_NUM;
 
   copy_num(a, mod);
   while (true) {
     if (comp_num_nat(mod, b) == ORD_LT)
       break;
 
-    sub_num_nat(mod, b, &tmp);
-    copy_num(&tmp, mod);
+    sub_num_nat(mod, b, mod);
 
-    increment_num(div, &tmp);
-    copy_num(&tmp, div);
+    increment_num(&tmp, &tmp);
   }
+
+  copy_num(&tmp, div);
 
   return STAT_OK;
 }
@@ -482,7 +483,10 @@ stat_t div_num(const num_t *a, const num_t *b, num_t *div, num_t *mod) {
     return stat;
   }
 
-  return div_num_nat(a, b, div, mod);
+  stat_t stat = div_num_nat(a, b, div, mod);
+  set_sign(div, SIGN_POS);
+  set_sign(mod, SIGN_POS);
+  return stat;
 }
 
 stat_t increment_num(const num_t *in, num_t *out) {
