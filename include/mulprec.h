@@ -8,10 +8,10 @@
 // 10 ^ NUM_BASE_DIGIT = NUM_DEC_MAX <= NUM_BASE
 // 2 ^ NUM_BASE_POW_2 = NUM_BASE
 #define NUM_LEN        500
-#define NUM_BASE       67108864
-#define NUM_DEC_MAX    10000000
-#define NUM_BASE_DIGIT 7
-#define NUM_BASE_POW_2 26
+#define NUM_BASE       134217728
+#define NUM_DEC_MAX    100000000
+#define NUM_BASE_DIGIT 8
+#define NUM_BASE_POW_2 27
 // clang-format on
 
 typedef enum {
