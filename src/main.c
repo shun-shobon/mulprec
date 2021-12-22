@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <time.h>
+#include <sys/time.h>
 
 #include "mulprec.h"
 
@@ -139,8 +139,8 @@ stat_t calc_pi(num_t *out) {
 }
 
 int main(void) {
-  struct timespec start;
-  timespec_get(&start, TIME_UTC);
+  struct timeval start;
+  gettimeofday(&start, NULL);
 
   num_t pi;
   stat_t stat = calc_pi(&pi);
@@ -164,16 +164,12 @@ int main(void) {
   print_num(&pi);
   printf("\n");
 
-  struct timespec end;
-  timespec_get(&end, TIME_UTC);
+  struct timeval end;
+  gettimeofday(&end, NULL);
 
-  time_t sec = end.tv_sec - start.tv_sec;
-  long nano = end.tv_nsec - start.tv_nsec;
-  if (nano < 0) {
-    sec--;
-    nano = 1000000000 + nano;
-  }
-  fprintf(stderr, "実行時間: %ld.%09ld秒\n", sec, nano);
+  double time = (double)(end.tv_sec - start.tv_sec) +
+                ((double)(end.tv_usec - start.tv_usec) / 1000000);
+  fprintf(stderr, "実行時間: %.6lf秒\n", time);
 
   return 0;
 }
